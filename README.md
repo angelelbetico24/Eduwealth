@@ -1,11 +1,12 @@
-EduWealth 📈💰
+# EduWealth
 
 EduWealth es un simulador financiero interactivo y plataforma de educación patrimonial para el aprendizaje práctico de inversiones, gestión presupuestaria y derivación a plataformas financieras reguladas.
 
-📂 Estructura del Repositorio
+## Estructura del Repositorio
 
 El proyecto sigue una organización modular que separa el código fuente, la documentación técnica y los artefactos de diseño:
 
+```text
 eduwealth/
 ├── README.md                   # Presentación general del proyecto
 ├── LICENSE                     # Licencia del proyecto (MIT)
@@ -36,75 +37,59 @@ eduwealth/
     │       ├── fxml/           # Vistas en formato FXML
     │       └── css/            # Estilos visuales para JavaFX
     └── test/                   # Pruebas unitarias
+```
 
-
-🚀 Acerca del Proyecto
+## Acerca del Proyecto
 
 EduWealth facilita el aprendizaje financiero mediante un entorno seguro (Paper Trading) con dinero ficticio, un gestor presupuestario con alertas dinámicas, módulos e-learning evaluables y un directorio comparativo de brokers regulados.
 
-📋 Documentación Técnica (/docs)
+## Documentación Técnica (/docs)
 
 Puedes consultar los detalles de diseño e ingeniería de software directamente en los siguientes documentos:
 
-Requisitos y Reglas de Negocio: Especificación de RF-01 a RF-08, RNF-01 a RNF-04 y reglas RN-01 a RN-06.
+- **Requisitos y Reglas de Negocio:** Especificación de RF-01 a RF-08, RNF-01 a RNF-04 y reglas RN-01 a RN-06.
+- **Casos de Uso:** Desglose de los 12 casos de uso oficiales y las 4 especificaciones detalladas (CU-04, CU-08, CU-09, CU-11).
+- **Modelo de Datos:** Diagrama Entidad-Relación y script de base de datos MySQL.
+- **Arquitectura y Clases:** Diagrama UML de clases y justificación de la arquitectura en 3 capas.
+- **Prototipo UI/UX en Figma:** Maqueta visual interactiva de las pantallas principales.
 
-Casos de Uso: Desglose de los 12 casos de uso oficiales y las 4 especificaciones detalladas (CU-04, CU-08, CU-09, CU-11).
+## Tecnologías Utilizadas
 
-Modelo de Datos: Diagrama Entidad-Relación y script de base de datos MySQL.
+- **Lenguaje:** Java 17+
+- **Interfaz Gráfica (GUI):** JavaFX (FXML + CSS) / Figma (UI/UX)
+- **Arquitectura:** 3 Capas (Presentación, Servicio, Persistencia DAO)
+- **Base de Datos:** MySQL Server 8.0+
+- **Persistencia:** JDBC (Java Database Connectivity)
+- **Gestor de Proyecto:** Apache Maven
+- **Diagramación UML:** PlantUML
 
-Arquitectura y Clases: Diagrama UML de clases y justificación de la arquitectura en 3 capas.
+## Instalación y Configuración
 
-Prototipo UI/UX en Figma: Maqueta visual interactiva de las pantallas principales.
+### Requisitos Previos
 
-🛠️ Tecnologías Utilizadas
+- JDK 17 o superior.
+- MySQL Server 8.0+ en ejecución.
+- Maven 3.8+ instalado.
 
-Lenguaje: Java 17+
+### Pasos de Ejecución
 
-Interfaz Gráfica (GUI): JavaFX (FXML + CSS) / Figma (UI/UX)
+1. **Clonar el repositorio:**
 
-Arquitectura: 3 Capas (Presentación, Servicio, Persistencia DAO)
+```bash
+   git clone https://github.com/tu-usuario/eduwealth.git
+   cd eduwealth
+```
 
-Base de Datos: MySQL Server 8.0+
+2. **Inicializar la Base de Datos:** Crea una base de datos local llamada `eduwealth_db` y ejecuta el script disponible en `docs/modelo-datos/script-base-datos.sql`.
 
-Persistencia: JDBC (Java Database Connectivity)
+3. **Configurar Credenciales:** Ajusta la URL, usuario y contraseña de conexión MySQL en la clase `ConexionBD.java` o en el archivo de propiedades correspondiente.
 
-Gestor de Proyecto: Apache Maven
+4. **Compilar y Ejecutar:**
 
-Diagramación UML: PlantUML
+```bash
+   mvn clean javafx:run
+```
 
-📦 Instalación y Configuración
+## Licencia
 
-Requisitos Previos
-
-JDK 17 o superior.
-
-MySQL Server 8.0+ en ejecución.
-
-Maven 3.8+ instalado.
-
-Pasos de Ejecución
-
-Clonar el repositorio:
-
-git clone https://github.com/tu-usuario/eduwealth.git
-cd eduwealth
-
-
-Inicializar la Base de Datos:
-
-Crea una base de datos local llamada eduwealth_db.
-
-Ejecuta el script disponible en docs/modelo-datos/script-base-datos.sql.
-
-Configurar Credenciales:
-
-Ajusta la URL, usuario y contraseña de conexión MySQL en la clase ConexionBD.java o el archivo de propiedades correspondiente.
-
-Compilar y Ejecutar:
-
-mvn clean javafx:run
-
-
-📄 Licencia
-
-Este proyecto está distribuido bajo la licencia MIT. Consulta el archivo LICENSE para más información.
+Este proyecto está distribuido bajo la licencia MIT. Consulta el archivo `LICENSE` para más información.
