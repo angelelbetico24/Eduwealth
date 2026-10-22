@@ -76,7 +76,7 @@ Puedes consultar los detalles de diseño e ingeniería de software directamente 
 1. **Clonar el repositorio:**
 
 ```bash
-   git clone https://github.com/tu-usuario/eduwealth.git
+   git clone https://github.com/angelelbetico24/eduwealth.git
    cd eduwealth
 ```
 
