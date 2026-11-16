@@ -1,0 +1,190 @@
+/* ============================================================
+   EduWealth — hoja de estilos (basada en los prototipos de Figma, 6.13)
+   ============================================================ */
+
+.root {
+    -ew-azul-noche: #0f172a;
+    -ew-azul-noche-2: #1e293b;
+    -ew-primario: #2563eb;
+    -ew-primario-hover: #1d4ed8;
+    -ew-verde: #22c55e;
+    -ew-verde-oscuro: #16a34a;
+    -ew-ambar: #f59e0b;
+    -ew-rojo: #dc2626;
+    -ew-texto: #0f172a;
+    -ew-texto-suave: #64748b;
+    -ew-borde: #e2e8f0;
+    -ew-fondo: #f8fafc;
+
+    -fx-font-family: "Segoe UI", "Inter", "Helvetica Neue", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: -ew-fondo;
+}
+
+/* ---------- Logotipo ---------- */
+.logo-edu {
+    -fx-text-fill: white;
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+}
+
+.logo-wealth {
+    -fx-text-fill: -ew-verde;
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- Pantallas de acceso (login / registro) ---------- */
+.auth-hero {
+    -fx-background-color: linear-gradient(to bottom right, -ew-azul-noche, -ew-azul-noche-2);
+    -fx-padding: 56;
+    -fx-spacing: 22;
+}
+
+.auth-lema {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+.auth-texto {
+    -fx-text-fill: #cbd5e1;
+    -fx-font-size: 15px;
+    -fx-wrap-text: true;
+}
+
+.auth-punto {
+    -fx-text-fill: #e2e8f0;
+    -fx-font-size: 14px;
+}
+
+.auth-punto-icono {
+    -fx-text-fill: -ew-verde;
+    -fx-font-weight: bold;
+}
+
+.auth-aviso {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+    -fx-wrap-text: true;
+}
+
+.auth-zona-formulario {
+    -fx-background-color: -ew-fondo;
+}
+
+/* ---------- Tarjetas ---------- */
+.tarjeta {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: -ew-borde;
+    -fx-border-radius: 14;
+    -fx-padding: 36;
+    -fx-spacing: 14;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.08), 24, 0, 0, 6);
+}
+
+.titulo {
+    -fx-text-fill: -ew-texto;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.subtitulo {
+    -fx-text-fill: -ew-texto-suave;
+    -fx-font-size: 14px;
+    -fx-wrap-text: true;
+}
+
+.etiqueta-campo {
+    -fx-text-fill: -ew-texto;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.nota {
+    -fx-text-fill: -ew-texto-suave;
+    -fx-font-size: 12px;
+    -fx-wrap-text: true;
+}
+
+/* ---------- Controles de formulario ---------- */
+.text-field, .password-field, .combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: -ew-borde;
+    -fx-border-radius: 8;
+    -fx-padding: 9 12;
+    -fx-pref-height: 40;
+}
+
+.combo-box {
+    -fx-padding: 2 4;
+}
+
+.text-field:focused, .password-field:focused, .combo-box:focused {
+    -fx-border-color: -ew-primario;
+}
+
+/* Campo con error (caso límite 6.9.1: indicación en rojo) */
+.campo-error, .campo-error:focused {
+    -fx-border-color: -ew-rojo;
+    -fx-background-color: #fef2f2;
+}
+
+.mensaje-error {
+    -fx-text-fill: -ew-rojo;
+    -fx-font-size: 13px;
+    -fx-wrap-text: true;
+}
+
+/* ---------- Botones ---------- */
+.boton-primario {
+    -fx-background-color: -ew-primario;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-pref-height: 42;
+    -fx-cursor: hand;
+}
+
+.boton-primario:hover {
+    -fx-background-color: -ew-primario-hover;
+}
+
+.boton-secundario {
+    -fx-background-color: white;
+    -fx-text-fill: -ew-texto;
+    -fx-border-color: -ew-borde;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-pref-height: 40;
+    -fx-cursor: hand;
+}
+
+.boton-secundario:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+.hyperlink {
+    -fx-text-fill: -ew-primario;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+/* ---------- Panel (provisional) ---------- */
+.saldo {
+    -fx-text-fill: -ew-texto;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.chip {
+    -fx-background-color: #dbeafe;
+    -fx-text-fill: -ew-primario-hover;
+    -fx-background-radius: 999;
+    -fx-padding: 3 10;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}

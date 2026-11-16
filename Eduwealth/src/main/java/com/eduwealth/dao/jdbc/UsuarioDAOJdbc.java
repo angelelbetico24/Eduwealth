@@ -1,6 +1,7 @@
 package com.eduwealth.dao.jdbc;
 
 import com.eduwealth.dao.DataAccessException;
+import com.eduwealth.dao.RegistroDuplicadoException;
 import com.eduwealth.dao.UsuarioDAO;
 import com.eduwealth.model.Rol;
 import com.eduwealth.model.Usuario;
@@ -10,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Optional;
@@ -64,6 +66,9 @@ public class UsuarioDAOJdbc implements UsuarioDAO {
                 usuario.setIdUsuario(id);
                 return id;
             }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            // Índice UNIQUE de email (caso límite 6.9.6): cubre también el registro simultáneo.
+            throw new RegistroDuplicadoException("Ya existe un usuario con ese correo electrónico.", e);
         } catch (SQLException e) {
             throw new DataAccessException("Error al registrar el usuario.", e);
         }

@@ -1,22 +1,21 @@
 package com.eduwealth;
 
+import com.eduwealth.util.Navegador;
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 /**
- * Punto de entrada JavaFX de EduWealth.
+ * Punto de entrada JavaFX de EduWealth: abre la ventana con la pantalla de inicio de sesión.
  */
 public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) {
-        Label bienvenida = new Label("EduWealth — en construcción");
-        Scene scene = new Scene(new StackPane(bienvenida), 1280, 800);
+        Navegador.inicializar(stage);
+        Navegador.ir("login");
         stage.setTitle("EduWealth");
-        stage.setScene(scene);
+        stage.setMinWidth(1100);
+        stage.setMinHeight(720);
         stage.show();
     }
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Panel de marca compartido por las pantallas de login y registro -->
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      styleClass="auth-hero" prefWidth="500" minWidth="420">
+
+    <HBox spacing="0">
+        <Label text="Edu" styleClass="logo-edu"/>
+        <Label text="Wealth" styleClass="logo-wealth"/>
+    </HBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <Label text="Aprende a invertir sin arriesgar tu dinero." styleClass="auth-lema"/>
+    <Label text="Practica con saldo virtual, fórmate con lecciones por niveles y da el salto a un broker real cuando estés preparado."
+           styleClass="auth-texto"/>
+
+    <VBox spacing="10">
+        <HBox spacing="10"><Label text="✓" styleClass="auth-punto-icono"/><Label text="Simulador de inversiones con 10.000 de saldo virtual" styleClass="auth-punto"/></HBox>
+        <HBox spacing="10"><Label text="✓" styleClass="auth-punto-icono"/><Label text="Lecciones y tests de educación financiera" styleClass="auth-punto"/></HBox>
+        <HBox spacing="10"><Label text="✓" styleClass="auth-punto-icono"/><Label text="Control de presupuestos con alertas al 80 % y al 100 %" styleClass="auth-punto"/></HBox>
+        <HBox spacing="10"><Label text="✓" styleClass="auth-punto-icono"/><Label text="Directorio de brokers regulados" styleClass="auth-punto"/></HBox>
+    </VBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <Label text="Contenido educativo, no asesoramiento financiero. Invertir conlleva riesgos."
+           styleClass="auth-aviso"/>
+</VBox>
