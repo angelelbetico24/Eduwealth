@@ -1,0 +1,5 @@
+# Copia este archivo como "db.properties" (misma carpeta) y pon tus credenciales.
+# db.properties está en .gitignore: nunca se sube al repositorio.
+db.url=jdbc:mysql://localhost:3306/eduwealth_db?serverTimezone=Europe/Madrid
+db.user=eduwealth
+db.password=CAMBIA_ESTA_CONTRASEÑA

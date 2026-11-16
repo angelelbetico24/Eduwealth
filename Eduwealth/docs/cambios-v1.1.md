@@ -23,6 +23,8 @@ Este apartado recoge **qué se cambia, por qué y cuál es la solución adoptada
 | C-09 | Modelo de datos | Categorías de gasto globales | CU-11 |
 | C-10 | Modelo de datos | Reintentos de test: se guarda la mejor nota | CU-08, RN-05 |
 | C-11 | Diseño de clases | `BigDecimal` para importes y cantidades | 6.12 |
+| C-22 | Modelo de datos | Campos de filtrado en `brokers` | 6.4 (RF-14), 6.10 |
+| C-23 | Modelo de datos | Restricciones `CHECK` de integridad | 6.9, 6.10.6 |
 | C-12 | Regla de negocio | Nueva RN-07: fórmula del medidor de preparación | RF-13 |
 | C-13 | Regla de negocio | Nueva RN-08: desbloqueo de lecciones por nivel | 6.6, 6.13 |
 | C-14 | Requisito | Nuevo RF-19 / CU-13: reiniciar simulador | 6.4, 6.7, 6.13 |
@@ -101,6 +103,17 @@ CREATE TABLE preguntas (
 - **Problema:** el diagrama de clases usa `int` y `double` para títulos y precios, mientras que la base de datos usa `DECIMAL`. `double` produce errores de redondeo con dinero, y `int` no admite fracciones (necesarias en criptomonedas).
 - **Solución:** todos los importes, precios, cantidades y tipos de cambio se representan en Java con `BigDecimal`.
 
+### C-22 · Campos de filtrado en `brokers`
+- **Problema:** RF-14 pide filtrar los brokers «por comisiones, tipos de activo y nivel recomendado», y el prototipo muestra filtros como «Acciones y ETFs», «Bajas comisiones» o «Apto para principiantes». Sin embargo, la tabla `brokers` solo guarda la información de comisiones como texto libre (`comisiones_info`) y no tiene ningún dato sobre tipos de activo ni nivel, así que no se puede filtrar.
+- **Solución:** se añaden tres campos. `comisiones_info` se mantiene como texto descriptivo para la ficha.
+  - `comision_minima DECIMAL(6,2)`: comisión mínima por operación en €, para el filtro de bajas comisiones.
+  - `tipos_activo SET('ACCION','ETF','FONDO','CRIPTO')`: activos que ofrece el broker. Reutiliza los mismos valores que `activos.tipo_activo`.
+  - `nivel_recomendado ENUM('PRINCIPIANTE','INTERMEDIO','AVANZADO')`: reutiliza los niveles de las lecciones, de modo que se puede recomendar un broker acorde al nivel alcanzado por el usuario.
+
+### C-23 · Restricciones `CHECK` de integridad
+- **Problema:** las validaciones del apartado 6.9 (cantidades a cero o negativas, importes negativos…) solo se hacían en la interfaz. Un error en el código podría guardar datos imposibles en la base de datos.
+- **Solución:** se añaden restricciones `CHECK` como última barrera: cantidades, precios, importes y límites > 0, saldo ≥ 0, mes entre 1 y 12, nota entre 0 y 100 y respuesta correcta entre A y D. Por eso el script requiere MySQL 8.0.16 o superior, que es la versión desde la que se aplican.
+
 ---
 
 ## 2. Cambios en reglas de negocio y requisitos
@@ -174,4 +187,4 @@ CREATE TABLE preguntas (
 - **RN-08** – Desbloqueo de lecciones por nivel (C-13)
 - **RF-19 / CU-13** – Reiniciar simulador (C-14)
 - **Tabla nueva:** `preguntas` (C-01)
-- **Campos nuevos:** `usuarios.rol`, `operaciones_simuladas.pnl_realizado`, `divisas.fecha_actualizacion`
+- **Campos nuevos:** `usuarios.rol`, `operaciones_simuladas.pnl_realizado`, `divisas.fecha_actualizacion`, `brokers.comision_minima`, `brokers.tipos_activo`, `brokers.nivel_recomendado`
