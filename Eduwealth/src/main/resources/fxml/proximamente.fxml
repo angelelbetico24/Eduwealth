@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Marcador para los módulos que aún no están implementados -->
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.eduwealth.controller.ProximamenteController">
+    <VBox styleClass="tarjeta" maxWidth="520" maxHeight="-Infinity">
+        <Label text="Próximamente" styleClass="chip"/>
+        <Label fx:id="titulo" styleClass="titulo"/>
+        <Label fx:id="descripcion" styleClass="subtitulo"/>
+        <Label text="Este módulo se incorporará en las siguientes versiones de EduWealth." styleClass="nota"/>
+    </VBox>
+</StackPane>

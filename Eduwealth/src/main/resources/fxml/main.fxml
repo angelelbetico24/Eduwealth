@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Estructura principal tras iniciar sesión: menú lateral + área de contenido -->
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eduwealth.controller.MainController">
+
+    <left>
+        <VBox styleClass="sidebar" prefWidth="240" minWidth="240">
+            <HBox styleClass="sidebar-logo">
+                <Label text="Edu" styleClass="logo-edu-sm"/>
+                <Label text="Wealth" styleClass="logo-wealth-sm"/>
+            </HBox>
+            <Label text="TU ESPACIO FINANCIERO" styleClass="sidebar-seccion"/>
+
+            <Button fx:id="navInicio" text="▦   Panel Principal" styleClass="nav-boton" maxWidth="Infinity" onAction="#irInicio"/>
+            <Button fx:id="navSimulador" text="↗   Simulador" styleClass="nav-boton" maxWidth="Infinity" onAction="#irSimulador"/>
+            <Button fx:id="navPresupuestos" text="▤   Presupuestos" styleClass="nav-boton" maxWidth="Infinity" onAction="#irPresupuestos"/>
+            <Button fx:id="navEducacion" text="✎   Educación" styleClass="nav-boton" maxWidth="Infinity" onAction="#irEducacion"/>
+            <Button fx:id="navBrokers" text="⌂   Brokers" styleClass="nav-boton" maxWidth="Infinity" onAction="#irBrokers"/>
+            <Button fx:id="navConfiguracion" text="⚙   Configuración" styleClass="nav-boton" maxWidth="Infinity" onAction="#irConfiguracion"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox styleClass="sidebar-caja" spacing="4">
+                <Label text="✓" styleClass="auth-punto-icono"/>
+                <Label text="Tu futuro empieza aquí" styleClass="sidebar-caja-titulo"/>
+                <Label text="Aprende, planifica y practica. A tu ritmo y sin dinero real." styleClass="sidebar-caja-texto"/>
+            </VBox>
+
+            <Label fx:id="divisaBase" styleClass="sidebar-divisa" maxWidth="Infinity"/>
+
+            <HBox styleClass="sidebar-usuario" spacing="10" alignment="CENTER_LEFT">
+                <Label fx:id="iniciales" styleClass="avatar"/>
+                <VBox HBox.hgrow="ALWAYS">
+                    <Label fx:id="nombreUsuario" styleClass="sidebar-usuario-nombre"/>
+                    <Label fx:id="tipoCuenta" styleClass="sidebar-usuario-tipo"/>
+                </VBox>
+                <Button text="⏻" styleClass="boton-salir" onAction="#cerrarSesion">
+                    <tooltip><Tooltip text="Cerrar sesión"/></tooltip>
+                </Button>
+            </HBox>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane fx:id="contenido" styleClass="contenido"/>
+    </center>
+</BorderPane>

@@ -1,0 +1,55 @@
+package com.eduwealth.dao.jdbc;
+
+import com.eduwealth.dao.DataAccessException;
+import com.eduwealth.dao.PresupuestoDAO;
+import com.eduwealth.model.ResumenCategoria;
+import com.eduwealth.util.ConexionBD;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PresupuestoDAOJdbc implements PresupuestoDAO {
+
+    /**
+     * Una sola consulta: cada presupuesto del mes con la suma de sus gastos del mismo mes
+     * (LEFT JOIN para incluir categorías sin gastos todavía).
+     */
+    private static final String SQL_RESUMEN_MES = """
+            SELECT p.id_categoria, c.nombre, p.monto_limite, COALESCE(SUM(g.monto), 0) AS gastado
+            FROM presupuestos p
+            JOIN categorias_gastos c ON c.id_categoria = p.id_categoria
+            LEFT JOIN gastos g ON g.id_usuario = p.id_usuario
+                              AND g.id_categoria = p.id_categoria
+                              AND MONTH(g.fecha) = p.mes AND YEAR(g.fecha) = p.anio
+            WHERE p.id_usuario = ? AND p.mes = ? AND p.anio = ?
+            GROUP BY p.id_presupuesto, p.id_categoria, c.nombre, p.monto_limite
+            ORDER BY c.nombre
+            """;
+
+    @Override
+    public List<ResumenCategoria> listarResumenMes(int idUsuario, int mes, int anio) {
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(SQL_RESUMEN_MES)) {
+            ps.setInt(1, idUsuario);
+            ps.setInt(2, mes);
+            ps.setInt(3, anio);
+            try (ResultSet rs = ps.executeQuery()) {
+                List<ResumenCategoria> resumen = new ArrayList<>();
+                while (rs.next()) {
+                    resumen.add(new ResumenCategoria(
+                            rs.getInt("id_categoria"),
+                            rs.getString("nombre"),
+                            rs.getBigDecimal("monto_limite"),
+                            rs.getBigDecimal("gastado")));
+                }
+                return resumen;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al consultar los presupuestos.", e);
+        }
+    }
+}

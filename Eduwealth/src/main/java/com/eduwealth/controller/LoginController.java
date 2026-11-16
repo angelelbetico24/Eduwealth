@@ -32,7 +32,7 @@ public class LoginController {
         try {
             Usuario usuario = autenticacion.iniciarSesion(campoEmail.getText(), campoPassword.getText());
             Sesion.iniciar(usuario);
-            Navegador.ir("panel");
+            Navegador.ir("main");
         } catch (ValidacionException e) {
             mostrarError(e.getMessage());
             campoPassword.clear();

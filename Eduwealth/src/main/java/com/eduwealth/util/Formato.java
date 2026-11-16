@@ -21,4 +21,11 @@ public final class Formato {
         DecimalFormat formato = new DecimalFormat("#,##0.00", SIMBOLOS_ES);
         return formato.format(importe) + " " + simbolo;
     }
+
+    /** Porcentaje con coma decimal y signo opcional: 85,0 % · +4,25 %. */
+    public static String porcentaje(BigDecimal valor, boolean conSigno) {
+        DecimalFormat formato = new DecimalFormat("#,##0.0#", SIMBOLOS_ES);
+        String signo = conSigno && valor.signum() > 0 ? "+" : "";
+        return signo + formato.format(valor) + " %";
+    }
 }

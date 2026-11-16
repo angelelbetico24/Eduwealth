@@ -72,7 +72,7 @@ public class RegistroController {
                     campoConfirmacion.getText(),
                     comboDivisa.getValue());
             Sesion.iniciar(usuario);
-            Navegador.ir("panel");
+            Navegador.ir("main");
         } catch (ValidacionException e) {
             mostrarError(e.getMessage());
             Node control = e.getCampo() != null ? controlesPorCampo.get(e.getCampo()) : null;

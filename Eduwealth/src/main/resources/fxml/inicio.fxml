@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Panel Principal (prototipo 6.13, primera pantalla) -->
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eduwealth.controller.InicioController"
+            fitToWidth="true" styleClass="scroll-contenido">
+
+    <VBox styleClass="pagina">
+
+        <!-- Cabecera -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="4">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label fx:id="saludo" styleClass="titulo"/>
+                    <Label text="Panel Principal" styleClass="chip-gris"/>
+                </HBox>
+                <Label fx:id="fecha" styleClass="subtitulo"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="saldoCabecera" styleClass="chip-saldo"/>
+        </HBox>
+
+        <Label fx:id="avisoError" styleClass="mensaje-error" visible="false" managed="false"/>
+
+        <!-- Tarjetas de resumen -->
+        <HBox spacing="20">
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Patrimonio Total" styleClass="tarjeta-etiqueta"/>
+                <HBox spacing="10" alignment="BASELINE_LEFT">
+                    <Label fx:id="patrimonio" styleClass="cifra"/>
+                    <Label fx:id="rentabilidadPct" styleClass="chip-positivo"/>
+                </HBox>
+                <Label fx:id="rentabilidad" styleClass="texto-positivo"/>
+                <Label fx:id="capitalInicial" styleClass="nota"/>
+            </VBox>
+
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Presupuesto del Mes" styleClass="tarjeta-etiqueta"/>
+                <HBox spacing="6" alignment="BASELINE_LEFT">
+                    <Label fx:id="gastoMes" styleClass="cifra"/>
+                    <Label fx:id="limiteMes" styleClass="nota"/>
+                </HBox>
+                <ProgressBar fx:id="barraPresupuesto" maxWidth="Infinity" styleClass="barra"/>
+                <HBox alignment="CENTER_LEFT">
+                    <Label fx:id="estadoPresupuesto" styleClass="chip-verde"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="restantePresupuesto" styleClass="nota"/>
+                </HBox>
+            </VBox>
+
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Medidor de Preparación" styleClass="tarjeta-etiqueta"/>
+                <HBox spacing="10" alignment="BASELINE_LEFT">
+                    <Label fx:id="preparacion" styleClass="cifra"/>
+                    <Label fx:id="estadoPreparacion" styleClass="chip-gris"/>
+                </HBox>
+                <ProgressBar fx:id="barraPreparacion" maxWidth="Infinity" styleClass="barra, barra-azul"/>
+                <Label fx:id="leccionesSuperadas" styleClass="nota"/>
+            </VBox>
+        </HBox>
+
+        <!-- Cartera + acciones rápidas -->
+        <HBox spacing="20">
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <HBox alignment="CENTER_LEFT">
+                    <VBox>
+                        <Label text="Resumen de Cartera" styleClass="tarjeta-titulo"/>
+                        <Label fx:id="subtituloCartera" styleClass="nota"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Ir al Simulador  →" styleClass="boton-secundario" onAction="#irSimulador"/>
+                </HBox>
+                <GridPane fx:id="tablaCartera" styleClass="tabla" hgap="0" vgap="0"/>
+                <HBox styleClass="pie-tabla" alignment="CENTER_LEFT">
+                    <Label fx:id="valorCartera" styleClass="pie-tabla-texto"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="efectivo" styleClass="pie-tabla-texto"/>
+                </HBox>
+                <Label text="ⓘ Precios ilustrativos · Simulación sin dinero real" styleClass="nota"/>
+            </VBox>
+
+            <VBox styleClass="tarjeta-panel" prefWidth="340" minWidth="300" maxWidth="360">
+                <Label text="Acciones rápidas" styleClass="tarjeta-titulo"/>
+                <VBox spacing="8">
+                    <Button text="+   Registrar gasto" styleClass="boton-suave" maxWidth="Infinity"
+                            onAction="#irPresupuestos"/>
+                    <Button text="↗   Invertir en virtual" styleClass="boton-suave" maxWidth="Infinity"
+                            onAction="#irSimulador"/>
+                </VBox>
+                <Label text="Tus novedades" styleClass="tarjeta-subtitulo"/>
+                <VBox fx:id="novedades" spacing="10"/>
+            </VBox>
+        </HBox>
+
+        <!-- Broker recomendado -->
+        <HBox fx:id="tarjetaBroker" styleClass="tarjeta-broker" spacing="18" alignment="CENTER_LEFT">
+            <Label fx:id="brokerIniciales" styleClass="broker-logo"/>
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label fx:id="brokerMotivo" styleClass="nota"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label fx:id="brokerNombre" styleClass="tarjeta-titulo"/>
+                    <Label fx:id="brokerNivel" styleClass="chip"/>
+                </HBox>
+                <Label fx:id="brokerDescripcion" styleClass="subtitulo"/>
+            </VBox>
+            <VBox spacing="4" prefWidth="260" maxWidth="260">
+                <Label fx:id="brokerComisiones" styleClass="texto-check" wrapText="true"/>
+                <Label fx:id="brokerRegulacion" styleClass="texto-check" wrapText="true"/>
+            </VBox>
+            <Button text="Ver directorio  →" styleClass="boton-primario" minWidth="-Infinity" onAction="#irBrokers"/>
+        </HBox>
+
+        <Label text="ⓘ Contenido educativo, no asesoramiento financiero. Invertir conlleva riesgos. Consulta las condiciones de cada broker."
+               styleClass="nota"/>
+    </VBox>
+</ScrollPane>

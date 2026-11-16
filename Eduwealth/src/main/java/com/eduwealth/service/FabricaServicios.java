@@ -1,6 +1,13 @@
 package com.eduwealth.service;
 
+import com.eduwealth.dao.jdbc.ActivoDAOJdbc;
+import com.eduwealth.dao.jdbc.BrokerDAOJdbc;
 import com.eduwealth.dao.jdbc.DivisaDAOJdbc;
+import com.eduwealth.dao.jdbc.LeccionDAOJdbc;
+import com.eduwealth.dao.jdbc.OperacionSimuladaDAOJdbc;
+import com.eduwealth.dao.jdbc.PosicionCarteraDAOJdbc;
+import com.eduwealth.dao.jdbc.PresupuestoDAOJdbc;
+import com.eduwealth.dao.jdbc.ProgresoLeccionDAOJdbc;
 import com.eduwealth.dao.jdbc.UsuarioDAOJdbc;
 
 /**
@@ -12,6 +19,11 @@ public final class FabricaServicios {
 
     private static final AutenticacionService AUTENTICACION = new AutenticacionService(new UsuarioDAOJdbc());
     private static final DivisaService DIVISAS = new DivisaService(new DivisaDAOJdbc());
+    private static final PresupuestoService PRESUPUESTOS = new PresupuestoService(new PresupuestoDAOJdbc());
+    private static final EducacionService EDUCACION =
+            new EducacionService(new LeccionDAOJdbc(), new ProgresoLeccionDAOJdbc());
+    private static final PanelService PANEL = new PanelService(DIVISAS, PRESUPUESTOS, EDUCACION,
+            new PosicionCarteraDAOJdbc(), new ActivoDAOJdbc(), new OperacionSimuladaDAOJdbc(), new BrokerDAOJdbc());
 
     private FabricaServicios() {
     }
@@ -22,5 +34,17 @@ public final class FabricaServicios {
 
     public static DivisaService divisas() {
         return DIVISAS;
+    }
+
+    public static PresupuestoService presupuestos() {
+        return PRESUPUESTOS;
+    }
+
+    public static EducacionService educacion() {
+        return EDUCACION;
+    }
+
+    public static PanelService panel() {
+        return PANEL;
     }
 }

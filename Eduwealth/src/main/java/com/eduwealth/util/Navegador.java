@@ -10,8 +10,8 @@ import java.net.URL;
 import java.util.Objects;
 
 /**
- * Cambia la vista mostrada en la ventana principal. Las vistas son archivos
- * {@code /fxml/<nombre>.fxml} y todas comparten la hoja de estilos de la aplicación.
+ * Carga vistas FXML ({@code /fxml/<nombre>.fxml}) y cambia la pantalla de la ventana principal.
+ * Todas las vistas comparten la hoja de estilos de la aplicación.
  */
 public final class Navegador {
 
@@ -21,6 +21,10 @@ public final class Navegador {
 
     private static Stage ventana;
 
+    /** Nodo raíz de una vista cargada y su controlador. */
+    public record Vista<T>(Parent raiz, T controlador) {
+    }
+
     private Navegador() {
     }
 
@@ -28,27 +32,31 @@ public final class Navegador {
         ventana = stage;
     }
 
-    /** Muestra la vista indicada y devuelve su controlador. */
-    public static <T> T ir(String vista) {
+    /** Carga una vista sin mostrarla (para insertarla dentro de otra, como el área de contenido). */
+    public static <T> Vista<T> cargar(String vista) {
         URL recurso = Objects.requireNonNull(
                 Navegador.class.getResource("/fxml/" + vista + ".fxml"), "No existe la vista " + vista);
         FXMLLoader loader = new FXMLLoader(recurso);
-        Parent raiz;
         try {
-            raiz = loader.load();
+            Parent raiz = loader.load();
+            return new Vista<>(raiz, loader.getController());
         } catch (IOException e) {
             throw new IllegalStateException("No se pudo cargar la vista " + vista, e);
         }
+    }
 
+    /** Muestra la vista indicada como pantalla completa de la ventana y devuelve su controlador. */
+    public static <T> T ir(String vista) {
+        Vista<T> cargada = cargar(vista);
         Scene escena = ventana.getScene();
         if (escena == null) {
-            escena = new Scene(raiz, ANCHO, ALTO);
+            escena = new Scene(cargada.raiz(), ANCHO, ALTO);
             escena.getStylesheets().add(
                     Objects.requireNonNull(Navegador.class.getResource(HOJA_ESTILOS)).toExternalForm());
             ventana.setScene(escena);
         } else {
-            escena.setRoot(raiz);
+            escena.setRoot(cargada.raiz());
         }
-        return loader.getController();
+        return cargada.controlador();
     }
 }
