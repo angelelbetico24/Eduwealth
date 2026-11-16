@@ -1,30 +1,28 @@
-### IntelliJ IDEA ###
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-.kotlin
+### Maven ###
+target/
 
-### Eclipse ###
+### Configuración local con credenciales (no subir) ###
+src/main/resources/db.properties
+
+### VS Code: solo se comparte la configuración del proyecto ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+### IntelliJ IDEA (el entorno del proyecto es VS Code, cambio C-21) ###
+.idea/
+*.iml
+out/
+
+### Eclipse / extensión Java de VS Code ###
 .apt_generated
 .classpath
 .factorypath
 .project
 .settings
-.springBeans
-.sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-
-### Mac OS ###
+### Sistema operativo ###
 .DS_Store
+Thumbs.db
