@@ -9,12 +9,12 @@ Eduwealth/                  <- raíz del repo (git)
 ├── README.md, LICENSE.md
 └── Eduwealth/              <- el proyecto Maven (pom.xml, mvnw, src, docs)
     ├── docs/               analisis-diseno.md, requisitos.md, casos-uso.md,
-    │                       cambios-v1.1.md (revisión del diseño), modelo-datos/script-base-datos.sql
+    │                       cambios/cambios-v1.1.md (revisión del diseño), modelo-datos/script-base-datos.sql
     └── src/main/java/com/eduwealth/{model,dao,dao/jdbc,service,controller,util}
         src/main/resources/{fxml,css}, src/test/java
 ```
 
-La **fuente de verdad del diseño** es el PDF «Documento de Análisis y Diseño v1.0» (el usuario lo tiene; no está en el repo) más `docs/cambios-v1.1.md`, que lo corrige. Si hay conflicto, manda `cambios-v1.1.md`.
+La **fuente de verdad del diseño** es el PDF «Documento de Análisis y Diseño v1.0» (el usuario lo tiene; no está en el repo) más `docs/cambios/cambios-v1.1.md`, que lo corrige. Si hay conflicto, manda `cambios-v1.1.md`.
 
 ## Comandos (ejecutar dentro de `Eduwealth/Eduwealth/`)
 
@@ -55,7 +55,7 @@ La **fuente de verdad del diseño** es el PDF «Documento de Análisis y Diseño
 
 RN-01 compra ≤ saldo · RN-02 venta ≤ títulos poseídos · RN-03 presupuesto: <80 % dentro del límite, ≥80 % y <100 % «En Alerta», ≥100 % «Presupuesto Excedido» · RN-04 convertir a la divisa base del usuario · RN-05 test aprobado con ≥70 % · RN-06 sin datos bancarios reales, derivar al broker con enlace externo · **RN-07** preparación = 70·(aprobadas/totales) + 30·min(operaciones/10, 1), «Listo» desde 75 % · **RN-08** lecciones de un nivel se desbloquean al aprobar todas las del anterior.
 
-Decisiones clave (detalle en `cambios-v1.1.md`, C-01…C-23): EUR es la divisa pivote y `tipo_cambio_base` = unidades por 1 EUR · el saldo está en la divisa base del usuario · el precio de compra/venta siempre es `activos.precio_actual` (el usuario solo elige activo y cantidad) · al vender todo se borra la posición · `pnl_realizado` solo en ventas, en divisa del activo · el test guarda la **mejor nota** · categorías de gasto globales · RF-16 es solo «Registro de gastos» (sin ingresos) · RF-19/CU-13 reiniciar simulador (borra posiciones y operaciones, no progreso ni presupuestos) · tabla `preguntas` (A–D) · `usuarios.rol` · `UNIQUE(usuario, categoría, mes, año)` en presupuestos · CHECK de integridad.
+Decisiones clave (detalle en `docs/cambios/cambios-v1.1.md`, C-01…C-26): EUR es la divisa pivote y `tipo_cambio_base` = unidades por 1 EUR · el saldo está en la divisa base del usuario · el precio de compra/venta siempre es `activos.precio_actual` (el usuario solo elige activo y cantidad) · al vender todo se borra la posición · `pnl_realizado` solo en ventas, en divisa del activo · el test guarda la **mejor nota** · categorías de gasto globales · RF-16 es solo «Registro de gastos» (sin ingresos) · RF-19/CU-13 reiniciar simulador (borra posiciones y operaciones, no progreso ni presupuestos) · tabla `preguntas` (A–D) · `usuarios.rol` · `UNIQUE(usuario, categoría, mes, año)` en presupuestos · CHECK de integridad.
 
 Las operaciones que tocan varias tablas (compra, venta, reinicio, test) deben ir en **una transacción** con rollback (caso límite 6.9.5).
 
@@ -84,7 +84,7 @@ Candidatas ya detectadas (dejar el «antes» en un commit propio para que el his
 
 - Cambios pequeños y verificables: compilar, ejecutar los tests y, si toca la UI, abrir la app y comprobarla antes de dar algo por hecho.
 - Un commit por funcionalidad con mensaje descriptivo (`feat(…)`, `docs: …`, `db: …`, `build: …`), en español. Terminar el mensaje con la línea `Co-Authored-By` que indique el entorno. Hacer `git push origin main` tras cada commit que el usuario pida subir.
-- Cualquier cambio de diseño, requisitos, modelo de datos o tecnología se **documenta en `docs/cambios-v1.1.md`** (o en el apartado de la v2) con problema, solución y secciones afectadas. El usuario copiará ese contenido a su documento.
+- Cualquier cambio de diseño, requisitos, modelo de datos o tecnología se **documenta en `docs/cambios/cambios-v1.1.md`** (o en el apartado de la v2) con problema, solución y secciones afectadas. El usuario copiará ese contenido a su documento.
 - Validaciones en la UI (campo en rojo) **y** en el servicio **y** como CHECK en la BD.
 - No añadir frameworks pesados (Spring, Hibernate) ni tablas extra: el usuario rechazó expresamente la complejidad innecesaria.
 - Al terminar un bloque, informar del porcentaje aproximado de avance del proyecto (el usuario lo pregunta con frecuencia).

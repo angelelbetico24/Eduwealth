@@ -3,7 +3,7 @@
 -- Motor: MySQL 8.0.16+ (necesario para que se apliquen los CHECK)
 -- Proyecto: EduWealth (Análisis y Diseño v1.1)
 --
--- Cambios respecto a v1.0 (ver docs/cambios-v1.1.md):
+-- Cambios respecto a v1.0 (ver docs/cambios/cambios-v1.1.md):
 --   C-01 tabla preguntas            C-02 usuarios.rol
 --   C-03 UNIQUE en presupuestos      C-04 operaciones_simuladas.pnl_realizado
 --   C-08 divisas.fecha_actualizacion C-22 campos de filtrado en brokers
