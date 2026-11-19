@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Simulador de Inversiones: CU-03 catálogo, CU-04 compra, CU-05 venta, CU-06 cartera, CU-07 historial -->
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eduwealth.controller.SimuladorController"
+            fitToWidth="true" styleClass="scroll-contenido">
+
+    <VBox styleClass="pagina">
+
+        <!-- Cabecera -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="4">
+                <Label text="Simulador de Inversiones" styleClass="titulo"/>
+                <Label text="Cada inversión es una oportunidad para aprender. Opera con dinero virtual, sin riesgo."
+                       styleClass="subtitulo"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="saldoCabecera" styleClass="chip-saldo"/>
+        </HBox>
+
+        <Label fx:id="avisoError" styleClass="mensaje-error" visible="false" managed="false"/>
+
+        <!-- Resumen -->
+        <HBox spacing="20">
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Valor de Cartera" styleClass="tarjeta-etiqueta"/>
+                <Label fx:id="valorCartera" styleClass="cifra"/>
+                <Label fx:id="numeroPosiciones" styleClass="nota"/>
+            </VBox>
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="P&amp;L No Realizado" styleClass="tarjeta-etiqueta"/>
+                <Label fx:id="pnlNoRealizado" styleClass="cifra"/>
+                <Label text="Ganancia o pérdida si vendieras ahora" styleClass="nota"/>
+            </VBox>
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Patrimonio Total" styleClass="tarjeta-etiqueta"/>
+                <HBox spacing="10" alignment="BASELINE_LEFT">
+                    <Label fx:id="patrimonio" styleClass="cifra"/>
+                    <Label fx:id="rentabilidadPct" styleClass="chip-positivo"/>
+                </HBox>
+                <Label fx:id="avisoDivisas" styleClass="nota"/>
+            </VBox>
+        </HBox>
+
+        <!-- Cartera y catálogo + panel de orden -->
+        <HBox spacing="20">
+            <VBox spacing="20" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+
+                <VBox styleClass="tarjeta-panel">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <VBox>
+                            <Label text="Posiciones en Cartera" styleClass="tarjeta-titulo"/>
+                            <Label text="Importes en la divisa de cada activo · selecciona una fila para operar"
+                                   styleClass="nota"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="+  Comprar" styleClass="boton-oscuro" minWidth="-Infinity" onAction="#modoCompra"/>
+                        <Button fx:id="botonVender" text="Vender" styleClass="boton-secundario" minWidth="-Infinity" onAction="#modoVenta"/>
+                    </HBox>
+                    <TableView fx:id="tablaPosiciones" styleClass="tabla-datos" prefHeight="220"/>
+                </VBox>
+
+                <VBox styleClass="tarjeta-panel">
+                    <Label text="Catálogo de Activos" styleClass="tarjeta-titulo"/>
+                    <HBox spacing="10">
+                        <TextField fx:id="campoBusqueda" promptText="Buscar por ticker o nombre…" HBox.hgrow="ALWAYS"/>
+                        <ComboBox fx:id="filtroTipo" prefWidth="175" minWidth="175"/>
+                        <ComboBox fx:id="filtroDivisa" prefWidth="170" minWidth="170"/>
+                    </HBox>
+                    <TableView fx:id="tablaCatalogo" styleClass="tabla-datos" prefHeight="300"/>
+                </VBox>
+            </VBox>
+
+            <!-- Panel de orden -->
+            <VBox styleClass="tarjeta-panel" prefWidth="360" minWidth="340" maxWidth="380" spacing="12">
+                <Label text="Nueva orden" styleClass="tarjeta-titulo"/>
+                <HBox styleClass="segmento">
+                    <fx:define>
+                        <ToggleGroup fx:id="grupoTipo"/>
+                    </fx:define>
+                    <ToggleButton fx:id="toggleCompra" text="Comprar" toggleGroup="$grupoTipo" selected="true"
+                                  maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="segmento-opcion"/>
+                    <ToggleButton fx:id="toggleVenta" text="Vender" toggleGroup="$grupoTipo"
+                                  maxWidth="Infinity" HBox.hgrow="ALWAYS" styleClass="segmento-opcion"/>
+                </HBox>
+
+                <VBox fx:id="cajaActivo" styleClass="caja-activo" spacing="2">
+                    <Label fx:id="ordenTicker" styleClass="tarjeta-titulo"/>
+                    <Label fx:id="ordenNombre" styleClass="nota"/>
+                    <Label fx:id="ordenPrecio" styleClass="ordenes-precio"/>
+                    <Label fx:id="ordenPoseidos" styleClass="nota"/>
+                </VBox>
+
+                <Label text="Número de títulos" styleClass="etiqueta-campo"/>
+                <HBox spacing="8">
+                    <TextField fx:id="campoCantidad" promptText="Ej.: 10 o 0,5" HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="botonMaximo" text="Máx." styleClass="boton-secundario" onAction="#venderTodo"/>
+                </HBox>
+
+                <GridPane fx:id="desglose" hgap="10" vgap="8" styleClass="desglose"/>
+
+                <Label fx:id="mensajeOrden" styleClass="mensaje-error" wrapText="true" visible="false" managed="false"/>
+
+                <Button fx:id="botonConfirmar" text="Confirmar compra" styleClass="boton-primario"
+                        maxWidth="Infinity" onAction="#confirmar"/>
+                <HBox alignment="CENTER">
+                    <Hyperlink text="Cancelar" onAction="#cancelar"/>
+                </HBox>
+                <Label text="ⓘ El precio es el último disponible en el catálogo. Simulación sin dinero real."
+                       styleClass="nota" wrapText="true"/>
+            </VBox>
+        </HBox>
+
+        <!-- Historial -->
+        <VBox styleClass="tarjeta-panel">
+            <Label text="Historial de Operaciones" styleClass="tarjeta-titulo"/>
+            <TableView fx:id="tablaHistorial" styleClass="tabla-datos" prefHeight="240"/>
+        </VBox>
+
+        <Label text="ⓘ Contenido educativo, no asesoramiento financiero. Precios ilustrativos · Entorno de simulación."
+               styleClass="nota"/>
+    </VBox>
+</ScrollPane>

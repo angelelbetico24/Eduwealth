@@ -1,7 +1,6 @@
 package com.eduwealth.service;
 
 import com.eduwealth.model.Broker;
-import com.eduwealth.model.Divisa;
 import com.eduwealth.model.EstadoPresupuesto;
 import com.eduwealth.model.Leccion;
 
@@ -9,27 +8,14 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Datos ya calculados que muestra el Panel Principal. Los importes globales están en la
- * divisa base del usuario; los de cada fila de cartera, en la divisa del activo.
+ * Datos ya calculados que muestra el Panel Principal: cartera (calculada por el simulador),
+ * presupuestos del mes, progreso educativo y broker recomendado.
  */
 public record ResumenPanel(
-        Divisa divisaBase,
-        BigDecimal saldoDisponible,
-        BigDecimal valorCartera,
-        BigDecimal patrimonioTotal,
-        BigDecimal rentabilidad,
-        BigDecimal rentabilidadPorcentaje,
-        List<FilaCartera> cartera,
+        ResumenCartera cartera,
         Presupuestos presupuestos,
         Educacion educacion,
-        Broker brokerRecomendado,
-        boolean tiposCambioDesactualizados) {
-
-    /** Una posición de la cartera lista para mostrar. */
-    public record FilaCartera(String ticker, String nombre, BigDecimal cantidad, BigDecimal precioMedio,
-                              BigDecimal precioActual, BigDecimal pnl, BigDecimal pnlPorcentaje,
-                              String simbolo) {
-    }
+        Broker brokerRecomendado) {
 
     /** Totales del mes y categorías que requieren atención (RN-03). {@code estado} es null sin presupuestos. */
     public record Presupuestos(BigDecimal limite, BigDecimal gastado, BigDecimal porcentaje,

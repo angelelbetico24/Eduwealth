@@ -401,3 +401,120 @@
 }
 
 .texto-check { -fx-text-fill: -ew-verde-oscuro; -fx-font-size: 12px; }
+
+/* ---------- Simulador ---------- */
+.tabla-datos {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-selection-bar: #dbeafe;
+    -fx-selection-bar-non-focused: #eff6ff;
+}
+
+.tabla-datos .column-header-background {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent -ew-borde transparent;
+}
+
+.tabla-datos .column-header, .tabla-datos .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-size: 36;
+}
+
+.tabla-datos .column-header .label {
+    -fx-text-fill: -ew-texto-suave;
+    -fx-font-size: 12px;
+    -fx-font-weight: normal;
+    -fx-alignment: center-left;
+}
+
+.tabla-datos .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+    -fx-cell-size: 48;
+}
+
+.tabla-datos .table-row-cell:hover { -fx-background-color: #f8fafc; }
+.tabla-datos .table-row-cell:selected { -fx-background-color: #dbeafe; }
+.tabla-datos .table-row-cell:selected .table-cell { -fx-text-fill: -ew-texto; }
+.tabla-datos .table-cell { -fx-padding: 4 10; -fx-text-fill: -ew-texto; -fx-alignment: center-left; }
+.tabla-datos .placeholder .label { -fx-text-fill: -ew-texto-suave; }
+
+.boton-oscuro {
+    -fx-background-color: -ew-azul-noche;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-pref-height: 40;
+    -fx-padding: 0 16;
+    -fx-cursor: hand;
+}
+
+.boton-oscuro:hover { -fx-background-color: -ew-azul-noche-2; }
+
+.boton-venta {
+    -fx-background-color: -ew-rojo;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-pref-height: 42;
+    -fx-cursor: hand;
+}
+
+.boton-venta:hover { -fx-background-color: #b91c1c; }
+
+.boton-primario:disabled, .boton-venta:disabled { -fx-opacity: 0.45; }
+
+.segmento {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 10;
+    -fx-padding: 4;
+    -fx-spacing: 4;
+}
+
+.segmento-opcion {
+    -fx-background-color: transparent;
+    -fx-text-fill: -ew-texto-suave;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-pref-height: 34;
+    -fx-cursor: hand;
+}
+
+.segmento-opcion:selected {
+    -fx-background-color: white;
+    -fx-text-fill: -ew-texto;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.12), 4, 0, 0, 1);
+}
+
+.caja-activo {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 10;
+    -fx-border-color: -ew-borde;
+    -fx-border-radius: 10;
+    -fx-padding: 12;
+}
+
+.ordenes-precio { -fx-text-fill: -ew-primario; -fx-font-weight: bold; -fx-font-size: 15px; -fx-padding: 4 0 0 0; }
+
+.desglose {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+}
+
+.desglose-valor { -fx-text-fill: -ew-texto; -fx-font-size: 13px; }
+.desglose-total { -fx-text-fill: -ew-texto; -fx-font-size: 14px; -fx-font-weight: bold; }
+
+.mensaje-exito {
+    -fx-text-fill: -ew-verde-oscuro;
+    -fx-font-size: 13px;
+    -fx-wrap-text: true;
+}
+
+/* Colores dentro de las tablas (más específicos que .tabla-datos .table-cell) */
+.tabla-datos .table-cell.texto-positivo, .tabla-datos .table-cell .texto-positivo { -fx-text-fill: -ew-verde-oscuro; }
+.tabla-datos .table-cell.texto-negativo, .tabla-datos .table-cell .texto-negativo { -fx-text-fill: -ew-rojo; }

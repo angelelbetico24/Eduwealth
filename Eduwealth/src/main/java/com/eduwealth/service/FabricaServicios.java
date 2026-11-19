@@ -3,6 +3,7 @@ package com.eduwealth.service;
 import com.eduwealth.dao.jdbc.ActivoDAOJdbc;
 import com.eduwealth.dao.jdbc.BrokerDAOJdbc;
 import com.eduwealth.dao.jdbc.DivisaDAOJdbc;
+import com.eduwealth.dao.jdbc.GestorTransaccionesJdbc;
 import com.eduwealth.dao.jdbc.LeccionDAOJdbc;
 import com.eduwealth.dao.jdbc.OperacionSimuladaDAOJdbc;
 import com.eduwealth.dao.jdbc.PosicionCarteraDAOJdbc;
@@ -22,8 +23,11 @@ public final class FabricaServicios {
     private static final PresupuestoService PRESUPUESTOS = new PresupuestoService(new PresupuestoDAOJdbc());
     private static final EducacionService EDUCACION =
             new EducacionService(new LeccionDAOJdbc(), new ProgresoLeccionDAOJdbc());
-    private static final PanelService PANEL = new PanelService(DIVISAS, PRESUPUESTOS, EDUCACION,
-            new PosicionCarteraDAOJdbc(), new ActivoDAOJdbc(), new OperacionSimuladaDAOJdbc(), new BrokerDAOJdbc());
+    private static final SimuladorService SIMULADOR = new SimuladorService(new UsuarioDAOJdbc(),
+            new ActivoDAOJdbc(), new PosicionCarteraDAOJdbc(), new OperacionSimuladaDAOJdbc(),
+            new GestorTransaccionesJdbc(), DIVISAS);
+    private static final PanelService PANEL = new PanelService(SIMULADOR, PRESUPUESTOS, EDUCACION,
+            new OperacionSimuladaDAOJdbc(), new BrokerDAOJdbc());
 
     private FabricaServicios() {
     }
@@ -42,6 +46,10 @@ public final class FabricaServicios {
 
     public static EducacionService educacion() {
         return EDUCACION;
+    }
+
+    public static SimuladorService simulador() {
+        return SIMULADOR;
     }
 
     public static PanelService panel() {

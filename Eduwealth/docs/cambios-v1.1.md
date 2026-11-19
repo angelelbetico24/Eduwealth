@@ -25,6 +25,8 @@ Este apartado recoge **qué se cambia, por qué y cuál es la solución adoptada
 | C-11 | Diseño de clases | `BigDecimal` para importes y cantidades | 6.12 |
 | C-22 | Modelo de datos | Campos de filtrado en `brokers` | 6.4 (RF-14), 6.10 |
 | C-23 | Modelo de datos | Restricciones `CHECK` de integridad | 6.9, 6.10.6 |
+| C-24 | Regla de negocio | Cantidades fraccionarias, redondeo a céntimos e importe mínimo | RF-05, RF-06, CU-04, CU-05 |
+| C-25 | Arquitectura | Transacciones en la capa DAO sin acoplar los servicios a JDBC | 6.11, CU-04 (E-02), 6.9.5 |
 | C-12 | Regla de negocio | Nueva RN-07: fórmula del medidor de preparación | RF-13 |
 | C-13 | Regla de negocio | Nueva RN-08: desbloqueo de lecciones por nivel | 6.6, 6.13 |
 | C-14 | Requisito | Nuevo RF-19 / CU-13: reiniciar simulador | 6.4, 6.7, 6.13 |
@@ -113,6 +115,18 @@ CREATE TABLE preguntas (
 ### C-23 · Restricciones `CHECK` de integridad
 - **Problema:** las validaciones del apartado 6.9 (cantidades a cero o negativas, importes negativos…) solo se hacían en la interfaz. Un error en el código podría guardar datos imposibles en la base de datos.
 - **Solución:** se añaden restricciones `CHECK` como última barrera: cantidades, precios, importes y límites > 0, saldo ≥ 0, mes entre 1 y 12, nota entre 0 y 100 y respuesta correcta entre A y D. Por eso el script requiere MySQL 8.0.16 o superior, que es la versión desde la que se aplican.
+
+### C-24 · Cantidades fraccionarias, redondeo e importe mínimo
+- **Problema:** el documento no indica si se pueden comprar fracciones de título, cómo se redondean los importes al convertirlos a la divisa base (el saldo es `DECIMAL(15,2)`) ni qué pasa con órdenes de importe casi nulo, que tras redondear podrían costar 0,00.
+- **Solución:**
+  - Se admiten **hasta 4 decimales** en la cantidad para cualquier activo, como hacen los brokers que permiten acciones fraccionadas. Es coherente con `DECIMAL(12,4)` y con C-11.
+  - El importe de cada orden se calcula en la divisa del activo y, tras convertirlo (RN-04), se **redondea a céntimos** (mitad hacia arriba) antes de restarlo o sumarlo al saldo. El precio medio de compra se guarda con 4 decimales, y el P&L realizado con 4 decimales en la divisa del activo.
+  - **Importe mínimo por orden: 0,01** en la divisa base. Una orden más pequeña se rechaza.
+  - Los totales de la cartera se muestran redondeados a céntimos. Por el redondeo de cada orden, el patrimonio puede variar en algún céntimo tras comprar y vender al mismo precio, igual que en un broker real.
+
+### C-25 · Transacciones en la capa de acceso a datos
+- **Problema:** la compra y la venta modifican tres tablas (`usuarios`, `posiciones_cartera` y `operaciones_simuladas`) y deben ser atómicas (E-02, caso límite 6.9.5). Si los servicios manejaran `Connection` de JDBC directamente, la capa de negocio quedaría acoplada a la tecnología de persistencia, en contra de 6.11.2.
+- **Solución:** se añaden las interfaces `Transaccion` y `GestorTransacciones` en el paquete `dao`, con su implementación JDBC en `dao.jdbc`. El servicio abre la transacción con *try-with-resources* y llama a `confirmar()` al final; si se lanza cualquier excepción antes, el cierre hace *rollback* automáticamente. Dentro de la transacción, el saldo y la posición se leen con `SELECT … FOR UPDATE`, de modo que RN-01 y RN-02 se comprueban con datos bloqueados y no con los que había en pantalla.
 
 ---
 

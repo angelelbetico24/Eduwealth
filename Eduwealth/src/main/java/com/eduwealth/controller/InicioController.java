@@ -6,6 +6,8 @@ import com.eduwealth.model.EstadoPresupuesto;
 import com.eduwealth.model.Usuario;
 import com.eduwealth.service.AutenticacionService;
 import com.eduwealth.service.FabricaServicios;
+import com.eduwealth.service.PosicionDetalle;
+import com.eduwealth.service.ResumenCartera;
 import com.eduwealth.service.ResumenPanel;
 import com.eduwealth.util.Formato;
 import com.eduwealth.util.Sesion;
@@ -81,12 +83,12 @@ public class InicioController {
         fecha.setText(capitalizar(hoy.format(FORMATO_FECHA)));
         try {
             ResumenPanel resumen = FabricaServicios.panel().construirResumen(usuario, hoy);
-            simbolo = resumen.divisaBase().getSimbolo();
-            mostrarCabecera(resumen);
-            mostrarPatrimonio(resumen);
+            simbolo = resumen.cartera().divisaBase().getSimbolo();
+            mostrarCabecera(resumen.cartera());
+            mostrarPatrimonio(resumen.cartera());
             mostrarPresupuesto(resumen.presupuestos());
             mostrarPreparacion(resumen.educacion());
-            mostrarCartera(resumen);
+            mostrarCartera(resumen.cartera());
             mostrarNovedades(resumen);
             mostrarBroker(resumen.brokerRecomendado());
         } catch (DataAccessException e) {
@@ -101,15 +103,16 @@ public class InicioController {
         this.navegacion = navegacion;
     }
 
-    private void mostrarCabecera(ResumenPanel r) {
+    private void mostrarCabecera(ResumenCartera r) {
         saldoCabecera.setText("Saldo virtual:  " + dinero(r.saldoDisponible()));
     }
 
-    private void mostrarPatrimonio(ResumenPanel r) {
+    private void mostrarPatrimonio(ResumenCartera r) {
         patrimonio.setText(dinero(r.patrimonioTotal()));
         boolean positiva = r.rentabilidad().signum() >= 0;
         rentabilidadPct.setText(Formato.porcentaje(r.rentabilidadPorcentaje(), true));
-        cambiarEstilo(rentabilidadPct, positiva ? "chip-positivo" : "chip-negativo", "chip-positivo", "chip-negativo");
+        cambiarEstilo(rentabilidadPct, SimuladorController.estiloRentabilidad(r.rentabilidadPorcentaje()),
+                "chip-positivo", "chip-negativo", "chip-gris");
         rentabilidad.setText((positiva ? "+" : "") + dinero(r.rentabilidad()) + " de rentabilidad");
         cambiarEstilo(rentabilidad, positiva ? "texto-positivo" : "texto-negativo", "texto-positivo", "texto-negativo");
         capitalInicial.setText("Sobre " + dinero(AutenticacionService.SALDO_INICIAL) + " iniciales");
@@ -146,8 +149,8 @@ public class InicioController {
         leccionesSuperadas.setText("✓ " + e.aprobadas() + " de " + e.totales() + " lecciones superadas");
     }
 
-    private void mostrarCartera(ResumenPanel r) {
-        List<ResumenPanel.FilaCartera> filas = r.cartera();
+    private void mostrarCartera(ResumenCartera r) {
+        List<PosicionDetalle> filas = r.posiciones();
         subtituloCartera.setText(filas.size() + (filas.size() == 1 ? " activo" : " activos")
                 + " · importes en la divisa de cada activo");
         valorCartera.setText("Valor de cartera:  " + dinero(r.valorCartera()));
@@ -167,18 +170,19 @@ public class InicioController {
             return;
         }
         int fila = 1;
-        for (ResumenPanel.FilaCartera f : filas) {
-            Label ticker = new Label(f.ticker());
+        for (PosicionDetalle f : filas) {
+            String simboloActivo = f.divisa().getSimbolo();
+            Label ticker = new Label(f.activo().getTicker());
             ticker.getStyleClass().add("tabla-ticker");
-            Label nombre = new Label(f.nombre());
+            Label nombre = new Label(f.activo().getNombre());
             nombre.getStyleClass().add("nota");
             tablaCartera.add(celda(new VBox(ticker, nombre), "tabla-celda"), 0, fila);
             tablaCartera.add(celda(new Label(f.cantidad().stripTrailingZeros().toPlainString()), "tabla-celda"), 1, fila);
-            tablaCartera.add(celda(new Label(Formato.moneda(f.precioMedio(), f.simbolo())), "tabla-celda"), 2, fila);
-            tablaCartera.add(celda(new Label(Formato.moneda(f.precioActual(), f.simbolo())), "tabla-celda"), 3, fila);
+            tablaCartera.add(celda(new Label(Formato.moneda(f.precioMedio(), simboloActivo)), "tabla-celda"), 2, fila);
+            tablaCartera.add(celda(new Label(Formato.moneda(f.activo().getPrecioActual(), simboloActivo)), "tabla-celda"), 3, fila);
 
             boolean positivo = f.pnl().signum() >= 0;
-            Label pnl = new Label((positivo ? "+" : "") + Formato.moneda(f.pnl(), f.simbolo()));
+            Label pnl = new Label((positivo ? "+" : "") + Formato.moneda(f.pnl(), simboloActivo));
             Label pct = new Label(Formato.porcentaje(f.pnlPorcentaje(), true));
             pnl.getStyleClass().add(positivo ? "texto-positivo" : "texto-negativo");
             pct.getStyleClass().addAll("nota", positivo ? "texto-positivo" : "texto-negativo");
@@ -206,7 +210,7 @@ public class InicioController {
                             + " · sigue creciendo",
                     Seccion.EDUCACION));
         }
-        if (r.tiposCambioDesactualizados()) {
+        if (r.cartera().tiposCambioDesactualizados()) {
             novedades.getChildren().add(novedad("ambar", "⚠", "Tipos de cambio desactualizados",
                     "Algún tipo de cambio tiene más de 7 días: el patrimonio es aproximado.", null));
         }

@@ -61,9 +61,13 @@ Las operaciones que tocan varias tablas (compra, venta, reinicio, test) deben ir
 
 ## Estado actual (actualizar al avanzar)
 
-Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · DAO de divisas, activos, usuarios, brokers, posiciones, presupuestos (solo lectura), lecciones, progresos (solo lectura), operaciones (solo conteo) · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-07 parcial) · 11 tests unitarios (todos pasan).
+Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · **Simulador completo** (CU-03…CU-07: catálogo con búsqueda/filtros, compra RN-01, venta RN-02 con P&L realizado, cartera, historial, cotización en vivo) · transacciones (`Transaccion`/`GestorTransacciones`, C-25) · `SimuladorService`, `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-07 parcial), `PanelService` · 22 tests unitarios (todos pasan; DAO falsos compartidos en `src/test/.../DaosEnMemoria.java`).
 
-Pendiente, en este orden: 1) **Simulador** (CU-03…CU-07: catálogo, compra RN-01, venta RN-02, cartera/P&L, historial) · 2) Presupuestos y gastos (CU-10, CU-11) · 3) Educación (lecciones, test RN-05, RN-08, mejor nota) · 4) Directorio de brokers con filtros y enlace externo con aviso (RN-06, CU-09) · 5) Configuración (cambio de divisa/contraseña RF-03, reiniciar simulador RF-19) · 6) Panel de administración (CU-12) · 7) README (descripción, tecnologías, instrucciones) · 8) refactorizaciones, optimizaciones, registro de IA y documento v2.
+El usuario demo tiene ya operaciones reales hechas en las pruebas (6 AAPL, saldo 8.921,65 €). Reejecutar el script SQL lo deja como al principio.
+
+Pendiente, en este orden: 1) **Presupuestos y gastos** (CU-10, CU-11: definir límite mensual, registrar gasto, estados RN-03, vista con barras por categoría) · 2) Educación (lecciones, test RN-05, RN-08, mejor nota) · 3) Directorio de brokers con filtros y enlace externo con aviso (RN-06, CU-09) · 4) Configuración (cambio de divisa/contraseña RF-03, reiniciar simulador RF-19) · 5) Panel de administración (CU-12) · 6) README (descripción, tecnologías, instrucciones) · 7) refactorizaciones, optimizaciones, registro de IA y documento v2.
+
+Pruebas de UI: script de ayuda en el scratchpad (`ui.ps1`: foco, clic relativo a la ventana, teclas con SendKeys, captura, cerrar). Si no existe, recrearlo con `user32` (`SetForegroundWindow`, `SetCursorPos`, `mouse_event`) y `System.Drawing`.
 
 ## Entregables del enunciado (Proyecto Integral II) — lo que se evalúa
 
