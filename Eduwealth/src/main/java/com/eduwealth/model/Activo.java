@@ -1,9 +1,11 @@
 package com.eduwealth.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * Producto financiero cotizado en el simulador. El precio está en la divisa del activo.
+ * {@code fechaActualizacion} es la última vez que cambió el precio (movimiento simulado del mercado, C-26).
  */
 public class Activo {
 
@@ -13,6 +15,7 @@ public class Activo {
     private TipoActivo tipoActivo;
     private BigDecimal precioActual;
     private int idDivisa;
+    private LocalDateTime fechaActualizacion;
 
     public Activo() {
     }
@@ -25,6 +28,12 @@ public class Activo {
         this.tipoActivo = tipoActivo;
         this.precioActual = precioActual;
         this.idDivisa = idDivisa;
+    }
+
+    public Activo(int idActivo, String ticker, String nombre, TipoActivo tipoActivo,
+                  BigDecimal precioActual, int idDivisa, LocalDateTime fechaActualizacion) {
+        this(idActivo, ticker, nombre, tipoActivo, precioActual, idDivisa);
+        this.fechaActualizacion = fechaActualizacion;
     }
 
     public int getIdActivo() {
@@ -73,6 +82,14 @@ public class Activo {
 
     public void setIdDivisa(int idDivisa) {
         this.idDivisa = idDivisa;
+    }
+
+    public LocalDateTime getFechaActualizacion() {
+        return fechaActualizacion;
+    }
+
+    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
     }
 
     @Override

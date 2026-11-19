@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
@@ -69,7 +70,20 @@ public class MainController {
             divisaBase.setText("");
         }
 
+        actualizarMercado();
         mostrar(Seccion.INICIO);
+    }
+
+    /**
+     * C-26: al entrar, los precios avanzan según los días transcurridos desde la última vez.
+     * Si falla, se sigue con los precios anteriores: no debe impedir usar la aplicación.
+     */
+    private void actualizarMercado() {
+        try {
+            FabricaServicios.mercado().actualizarPrecios(LocalDateTime.now());
+        } catch (DataAccessException e) {
+            System.err.println("No se pudieron actualizar los precios: " + e.getMessage());
+        }
     }
 
     /** Carga la sección en el área de contenido y marca su botón como activo. */

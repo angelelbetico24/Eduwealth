@@ -27,6 +27,7 @@ Este apartado recoge **qué se cambia, por qué y cuál es la solución adoptada
 | C-23 | Modelo de datos | Restricciones `CHECK` de integridad | 6.9, 6.10.6 |
 | C-24 | Regla de negocio | Cantidades fraccionarias, redondeo a céntimos e importe mínimo | RF-05, RF-06, CU-04, CU-05 |
 | C-25 | Arquitectura | Transacciones en la capa DAO sin acoplar los servicios a JDBC | 6.11, CU-04 (E-02), 6.9.5 |
+| C-26 | Requisito / Modelo de datos | Movimiento simulado del mercado por días transcurridos | 6.3, RF-07, CU-06, CU-12, 6.10 |
 | C-12 | Regla de negocio | Nueva RN-07: fórmula del medidor de preparación | RF-13 |
 | C-13 | Regla de negocio | Nueva RN-08: desbloqueo de lecciones por nivel | 6.6, 6.13 |
 | C-14 | Requisito | Nuevo RF-19 / CU-13: reiniciar simulador | 6.4, 6.7, 6.13 |
@@ -127,6 +128,24 @@ CREATE TABLE preguntas (
 ### C-25 · Transacciones en la capa de acceso a datos
 - **Problema:** la compra y la venta modifican tres tablas (`usuarios`, `posiciones_cartera` y `operaciones_simuladas`) y deben ser atómicas (E-02, caso límite 6.9.5). Si los servicios manejaran `Connection` de JDBC directamente, la capa de negocio quedaría acoplada a la tecnología de persistencia, en contra de 6.11.2.
 - **Solución:** se añaden las interfaces `Transaccion` y `GestorTransacciones` en el paquete `dao`, con su implementación JDBC en `dao.jdbc`. El servicio abre la transacción con *try-with-resources* y llama a `confirmar()` al final; si se lanza cualquier excepción antes, el cierre hace *rollback* automáticamente. Dentro de la transacción, el saldo y la posición se leen con `SELECT … FOR UPDATE`, de modo que RN-01 y RN-02 se comprueban con datos bloqueados y no con los que había en pantalla.
+
+### C-26 · Movimiento simulado del mercado
+- **Problema:** los precios del catálogo eran fijos. Solo cambiaban si el administrador los editaba (CU-12), así que la ganancia o pérdida no realizada (RF-07, CU-06) era siempre 0 y el simulador no enseñaba qué es la volatilidad ni cómo evoluciona una inversión. Conectarse a una API de cotizaciones reales sigue fuera del alcance (apartado 6.3): añadiría dependencia de internet, claves de acceso y límites de uso.
+- **Solución:** los precios se mueven de forma **simulada y automática según los días reales transcurridos**.
+  - Al iniciar sesión, por cada activo se calculan los días naturales desde su última actualización y se aplica una variación aleatoria por cada día, como máximo 30 días de una vez. Dentro del mismo día no vuelve a cambiar.
+  - Cada día el precio se multiplica por `1 + r`, donde `r` sigue una distribución normal con la volatilidad y la tendencia del tipo de activo. La tendencia ligeramente positiva de acciones y fondos (≈ 7 % anual) refleja su crecimiento habitual a largo plazo. Cada variación diaria se limita a ±25 % y el precio nunca baja de 0,0001.
+
+    | Tipo | Volatilidad diaria | Tendencia diaria |
+    |---|---|---|
+    | Acción | 2 % | +0,03 % |
+    | ETF | 1 % | +0,03 % |
+    | Fondo | 0,8 % | +0,02 % |
+    | Cripto | 5 % | 0 % |
+
+  - **El usuario no puede forzar el mercado.** Un botón para avanzar días permitiría repetir hasta obtener beneficio, y además los precios son comunes a todos los usuarios. Solo el **administrador** tendrá la opción «Simular un día de mercado» (CU-12), pensada para demostraciones.
+  - Si dos usuarios inician sesión a la vez, los activos se leen bloqueados (`SELECT … FOR UPDATE`) dentro de una transacción (C-25), y el movimiento se aplica una sola vez.
+  - **Modelo de datos:** nueva columna `activos.fecha_actualizacion DATETIME`. Las bases ya creadas se actualizan con `docs/modelo-datos/migraciones/001_C-26_fecha_actualizacion_activos.sql`, sin perder datos.
+  - Las reglas RN-01, RN-02 y RN-04 no cambian: las órdenes siguen usando el `precio_actual` del catálogo (C-15).
 
 ---
 

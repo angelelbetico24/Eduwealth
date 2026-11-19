@@ -11,6 +11,8 @@ import com.eduwealth.dao.jdbc.PresupuestoDAOJdbc;
 import com.eduwealth.dao.jdbc.ProgresoLeccionDAOJdbc;
 import com.eduwealth.dao.jdbc.UsuarioDAOJdbc;
 
+import java.util.Random;
+
 /**
  * Fábrica de servicios con inyección de dependencias manual (apartado 6.11.2).
  * Es el único punto donde se eligen las implementaciones JDBC de los DAO:
@@ -26,6 +28,8 @@ public final class FabricaServicios {
     private static final SimuladorService SIMULADOR = new SimuladorService(new UsuarioDAOJdbc(),
             new ActivoDAOJdbc(), new PosicionCarteraDAOJdbc(), new OperacionSimuladaDAOJdbc(),
             new GestorTransaccionesJdbc(), DIVISAS);
+    private static final MercadoService MERCADO =
+            new MercadoService(new ActivoDAOJdbc(), new GestorTransaccionesJdbc(), new Random());
     private static final PanelService PANEL = new PanelService(SIMULADOR, PRESUPUESTOS, EDUCACION,
             new OperacionSimuladaDAOJdbc(), new BrokerDAOJdbc());
 
@@ -50,6 +54,10 @@ public final class FabricaServicios {
 
     public static SimuladorService simulador() {
         return SIMULADOR;
+    }
+
+    public static MercadoService mercado() {
+        return MERCADO;
     }
 
     public static PanelService panel() {

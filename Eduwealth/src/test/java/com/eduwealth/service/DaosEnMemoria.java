@@ -14,6 +14,7 @@ import com.eduwealth.model.PosicionCartera;
 import com.eduwealth.model.Usuario;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -110,6 +111,18 @@ final class DaosEnMemoria {
         @Override
         public Optional<Activo> buscarPorTicker(String ticker) {
             return porId.values().stream().filter(a -> a.getTicker().equals(ticker)).findFirst();
+        }
+
+        @Override
+        public List<Activo> bloquearTodos(Transaccion tx) {
+            return listarTodos();
+        }
+
+        @Override
+        public void actualizarPrecio(Transaccion tx, int idActivo, BigDecimal precio, LocalDateTime fecha) {
+            Activo activo = porId.get(idActivo);
+            activo.setPrecioActual(precio);
+            activo.setFechaActualizacion(fecha);
         }
     }
 

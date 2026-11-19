@@ -37,6 +37,7 @@ La **fuente de verdad del diseño** es el PDF «Documento de Análisis y Diseño
 - Credenciales en `src/main/resources/db.properties` (**ignorado por git**). Plantilla: `db.properties.example`.
 - **NO abrir, leer ni mostrar `db.properties`** (el usuario lo pidió expresamente). `ConexionBD` lo lee por código. Si hay que comprobar la BD, usar la app o `DiagnosticoBD`, que no imprimen la contraseña. Nunca poner contraseñas reales en la plantilla, en commits ni en la conversación.
 - El script `docs/modelo-datos/script-base-datos.sql` recrea todo (DROP + CREATE + datos de prueba). Lo ejecuta el usuario desde Workbench como `root`.
+- Cambios de esquema sobre una base ya creada: script en `docs/modelo-datos/migraciones/NNN_C-XX_descripcion.sql` (sin perder datos) **y** el mismo cambio en el script completo. Se pueden aplicar desde código con un programa temporal en el scratchpad que use `ConexionBD` (classpath `target/classes;<ruta Windows del mysql-connector-j>`; usar `cygpath -w`), sin mostrar credenciales.
 - Usuarios de prueba: `demo@eduwealth.com` / `demo1234` (USUARIO) y `admin@eduwealth.com` / `admin1234` (ADMIN). Están documentados a propósito (el profesor debe poder probar la app).
 
 ## Arquitectura (3 capas, apartado 6.11 del diseño)
@@ -53,6 +54,8 @@ La **fuente de verdad del diseño** es el PDF «Documento de Análisis y Diseño
 
 ## Reglas de negocio (RN) y decisiones de la revisión v1.1
 
+**Mercado simulado (C-26):** `MercadoService.actualizarPrecios` se llama en `MainController` al entrar; mueve cada precio por días naturales transcurridos (normal por tipo de activo, máx. 30 días, idempotente en el día). El usuario no puede forzarlo; `simularUnDia` es solo para el panel de administración.
+
 RN-01 compra ≤ saldo · RN-02 venta ≤ títulos poseídos · RN-03 presupuesto: <80 % dentro del límite, ≥80 % y <100 % «En Alerta», ≥100 % «Presupuesto Excedido» · RN-04 convertir a la divisa base del usuario · RN-05 test aprobado con ≥70 % · RN-06 sin datos bancarios reales, derivar al broker con enlace externo · **RN-07** preparación = 70·(aprobadas/totales) + 30·min(operaciones/10, 1), «Listo» desde 75 % · **RN-08** lecciones de un nivel se desbloquean al aprobar todas las del anterior.
 
 Decisiones clave (detalle en `docs/cambios/cambios-v1.1.md`, C-01…C-26): EUR es la divisa pivote y `tipo_cambio_base` = unidades por 1 EUR · el saldo está en la divisa base del usuario · el precio de compra/venta siempre es `activos.precio_actual` (el usuario solo elige activo y cantidad) · al vender todo se borra la posición · `pnl_realizado` solo en ventas, en divisa del activo · el test guarda la **mejor nota** · categorías de gasto globales · RF-16 es solo «Registro de gastos» (sin ingresos) · RF-19/CU-13 reiniciar simulador (borra posiciones y operaciones, no progreso ni presupuestos) · tabla `preguntas` (A–D) · `usuarios.rol` · `UNIQUE(usuario, categoría, mes, año)` en presupuestos · CHECK de integridad.
@@ -61,11 +64,11 @@ Las operaciones que tocan varias tablas (compra, venta, reinicio, test) deben ir
 
 ## Estado actual (actualizar al avanzar)
 
-Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · **Simulador completo** (CU-03…CU-07: catálogo con búsqueda/filtros, compra RN-01, venta RN-02 con P&L realizado, cartera, historial, cotización en vivo) · transacciones (`Transaccion`/`GestorTransacciones`, C-25) · `SimuladorService`, `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-07 parcial), `PanelService` · 22 tests unitarios (todos pasan; DAO falsos compartidos en `src/test/.../DaosEnMemoria.java`).
+Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · **Simulador completo** (CU-03…CU-07: catálogo con búsqueda/filtros, compra RN-01, venta RN-02 con P&L realizado, cartera, historial, cotización en vivo) · transacciones (`Transaccion`/`GestorTransacciones`, C-25) · mercado simulado (C-26, `MercadoService`) · `SimuladorService`, `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-07 parcial), `PanelService` · 27 tests unitarios (todos pasan; DAO falsos compartidos en `src/test/.../DaosEnMemoria.java`).
 
 El usuario demo tiene ya operaciones reales hechas en las pruebas (6 AAPL, saldo 8.921,65 €). Reejecutar el script SQL lo deja como al principio.
 
-Pendiente, en este orden: 1) **Presupuestos y gastos** (CU-10, CU-11: definir límite mensual, registrar gasto, estados RN-03, vista con barras por categoría) · 2) Educación (lecciones, test RN-05, RN-08, mejor nota) · 3) Directorio de brokers con filtros y enlace externo con aviso (RN-06, CU-09) · 4) Configuración (cambio de divisa/contraseña RF-03, reiniciar simulador RF-19) · 5) Panel de administración (CU-12) · 6) README (descripción, tecnologías, instrucciones) · 7) refactorizaciones, optimizaciones, registro de IA y documento v2.
+Pendiente, en este orden: 1) **Presupuestos y gastos** (CU-10, CU-11: definir límite mensual, registrar gasto, estados RN-03, vista con barras por categoría) · 2) Educación (lecciones, test RN-05, RN-08, mejor nota) · 3) Directorio de brokers con filtros y enlace externo con aviso (RN-06, CU-09) · 4) Configuración (cambio de divisa/contraseña RF-03, reiniciar simulador RF-19) · 5) Panel de administración (CU-12, incluye botón «Simular un día de mercado» → `MercadoService.simularUnDia`) · 6) README (descripción, tecnologías, instrucciones) · 7) refactorizaciones, optimizaciones, registro de IA y documento v2.
 
 Pruebas de UI: script de ayuda en el scratchpad (`ui.ps1`: foco, clic relativo a la ventana, teclas con SendKeys, captura, cerrar). Si no existe, recrearlo con `user32` (`SetForegroundWindow`, `SetCursorPos`, `mouse_event`) y `System.Drawing`.
 

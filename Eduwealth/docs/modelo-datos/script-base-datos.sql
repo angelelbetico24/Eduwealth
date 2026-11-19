@@ -7,6 +7,7 @@
 --   C-01 tabla preguntas            C-02 usuarios.rol
 --   C-03 UNIQUE en presupuestos      C-04 operaciones_simuladas.pnl_realizado
 --   C-08 divisas.fecha_actualizacion C-22 campos de filtrado en brokers
+--   C-26 activos.fecha_actualizacion (movimiento simulado del mercado)
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS eduwealth_db
@@ -66,6 +67,7 @@ CREATE TABLE usuarios (
 
 -- ------------------------------------------------------------
 -- 3. TABLA: activos
+-- fecha_actualizacion: último cambio de precio; el mercado simulado avanza por días (C-26)
 -- ------------------------------------------------------------
 CREATE TABLE activos (
     id_activo INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,6 +76,7 @@ CREATE TABLE activos (
     tipo_activo ENUM('ACCION', 'ETF', 'FONDO', 'CRIPTO') NOT NULL,
     precio_actual DECIMAL(15,4) NOT NULL,
     id_divisa INT NOT NULL,
+    fecha_actualizacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_activo_precio CHECK (precio_actual > 0),
     FOREIGN KEY (id_divisa) REFERENCES divisas(id_divisa) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB;
