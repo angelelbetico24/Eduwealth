@@ -1,6 +1,5 @@
 package com.eduwealth.service;
 
-import com.eduwealth.dao.UsuarioDAO;
 import com.eduwealth.model.Divisa;
 import com.eduwealth.model.Rol;
 import com.eduwealth.model.Usuario;
@@ -8,9 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -25,7 +21,7 @@ class AutenticacionServiceTest {
 
     @BeforeEach
     void preparar() {
-        servicio = new AutenticacionService(new UsuarioDAOEnMemoria());
+        servicio = new AutenticacionService(new DaosEnMemoria.Usuarios());
     }
 
     @Test
@@ -79,34 +75,5 @@ class AutenticacionServiceTest {
     private String campoConError(String nombre, String email, String pass, String conf, Divisa divisa) {
         return assertThrows(ValidacionException.class,
                 () -> servicio.registrar(nombre, email, pass, conf, divisa)).getCampo();
-    }
-
-    /** DAO falso en memoria: permite probar el servicio sin base de datos. */
-    private static final class UsuarioDAOEnMemoria implements UsuarioDAO {
-
-        private final Map<String, Usuario> porEmail = new HashMap<>();
-        private int siguienteId = 1;
-
-        @Override
-        public Optional<Usuario> buscarPorId(int idUsuario) {
-            return porEmail.values().stream().filter(u -> u.getIdUsuario() == idUsuario).findFirst();
-        }
-
-        @Override
-        public Optional<Usuario> buscarPorEmail(String email) {
-            return Optional.ofNullable(porEmail.get(email));
-        }
-
-        @Override
-        public boolean existeEmail(String email) {
-            return porEmail.containsKey(email);
-        }
-
-        @Override
-        public int insertar(Usuario usuario) {
-            usuario.setIdUsuario(siguienteId++);
-            porEmail.put(usuario.getEmail(), usuario);
-            return usuario.getIdUsuario();
-        }
     }
 }

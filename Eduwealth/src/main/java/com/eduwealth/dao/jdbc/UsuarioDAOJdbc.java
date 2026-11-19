@@ -2,11 +2,13 @@ package com.eduwealth.dao.jdbc;
 
 import com.eduwealth.dao.DataAccessException;
 import com.eduwealth.dao.RegistroDuplicadoException;
+import com.eduwealth.dao.Transaccion;
 import com.eduwealth.dao.UsuarioDAO;
 import com.eduwealth.model.Rol;
 import com.eduwealth.model.Usuario;
 import com.eduwealth.util.ConexionBD;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -83,6 +85,32 @@ public class UsuarioDAOJdbc implements UsuarioDAO {
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error al buscar el usuario.", e);
+        }
+    }
+
+    @Override
+    public Optional<Usuario> bloquearPorId(Transaccion tx, int idUsuario) {
+        Connection con = TransaccionJdbc.conexion(tx);
+        try (PreparedStatement ps = con.prepareStatement(SELECT_BASE + " WHERE id_usuario = ? FOR UPDATE")) {
+            ps.setInt(1, idUsuario);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? Optional.of(mapear(rs)) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al leer el saldo del usuario.", e);
+        }
+    }
+
+    @Override
+    public void actualizarSaldo(Transaccion tx, int idUsuario, BigDecimal saldo) {
+        Connection con = TransaccionJdbc.conexion(tx);
+        try (PreparedStatement ps = con.prepareStatement(
+                "UPDATE usuarios SET saldo_ficticio = ? WHERE id_usuario = ?")) {
+            ps.setBigDecimal(1, saldo);
+            ps.setInt(2, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al actualizar el saldo.", e);
         }
     }
 
