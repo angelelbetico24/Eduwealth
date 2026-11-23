@@ -9,6 +9,7 @@ import com.eduwealth.service.ResultadoTest;
 import com.eduwealth.service.ValidacionException;
 import com.eduwealth.util.Formato;
 import com.eduwealth.util.Sesion;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -216,7 +217,8 @@ public class LeccionController {
         tarjetaResultado.getChildren().add(cabecera);
 
         String mejor = "Tu mejor nota en esta lección: " + Formato.porcentaje(r.mejorNota(), false).replace(",0 %", " %");
-        if (r.nuevaMejorNota() && r.mejorNota().compareTo(r.nota()) == 0) {
+        // La felicitación por mejorar la nota solo tiene sentido si además se aprueba
+        if (r.aprobado() && r.nuevaMejorNota()) {
             mejor += " (¡nueva mejor nota!)";
         }
         tarjetaResultado.getChildren().add(linea(mejor, "nota"));
@@ -281,7 +283,8 @@ public class LeccionController {
             f.setManaged(f == fase);
         }
         chipFase.setText(nombre);
-        desplazamiento.setVvalue(0);
+        // Tras el siguiente pulso de diseño: si se hace antes, el ScrollPane aún tiene la altura de la fase anterior
+        Platform.runLater(() -> desplazamiento.setVvalue(0));
     }
 
     private static String opcion(Pregunta p, char letra) {
