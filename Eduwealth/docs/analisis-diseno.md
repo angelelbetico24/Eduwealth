@@ -1,80 +1,75 @@
-# Documento de Análisis y Diseño v1.0 — EduWealth
+# Análisis y diseño — EduWealth (resumen, versión 1.1)
 
-- **Proyecto:** EduWealth — Plataforma de Simulación Financiera y Control de Gastos
-- **Fecha:** Octubre 2026
-- **Tecnologías principales:** Java 17, JavaFX, JDBC, MySQL, Figma, Git/GitHub
+- **Proyecto:** EduWealth — plataforma de educación financiera con simulador de inversiones, presupuestos y directorio de brokers.
+- **Autor:** Ángel Muñoz López.
+- **Base:** *Documento de Análisis y Diseño v1.0* (22/10/2026), con la revisión **v1.1** aplicada durante la implementación (Proyecto Integral II).
 
----
+Este documento resume el diseño vigente. El detalle de cada cambio respecto a la v1.0, con su problema, su solución y las secciones afectadas, está en [`cambios/cambios-v1.1.md`](cambios/cambios-v1.1.md) (C-01 a C-29).
 
-## 1. Introducción y Propósito del Sistema
-
-**EduWealth** es una aplicación de escritorio diseñada para fomentar la educación financiera, el control de presupuestos personales y la simulación práctica de inversiones (*Paper Trading*) sin riesgo económico real.
-
-El propósito de este documento es detallar la arquitectura del sistema, el modelo funcional (casos de uso), el diseño relacional de la base de datos, las especificaciones de interfaz gráfica (UI/UX) y las decisiones tecnológicas adoptadas durante la fase de análisis y diseño.
-
----
-
-## 2. Reglas de Negocio (RN)
-
-El comportamiento y la lógica del sistema están estrictamente delimitados por las siguientes reglas de negocio:
-
-- **RN-01 (Capital Virtual Inicial):** Un usuario no podrá realizar una orden de compra en el simulador si el coste total supera el saldo ficticio disponible (inicialmente 10.000,00 €).
-- **RN-02 (Límite de Venta Simulada):** Un usuario no podrá vender más títulos o participaciones de un activo de las que posee actualmente en su cartera virtual.
-- **RN-03 (Alerta por Umbrales de Presupuesto):** Cuando los gastos acumulados en una categoría alcancen o superen el 80% se marca como "En Alerta", y al 100% como "Presupuesto Excedido".
-- **RN-04 (Conversión Obligatoria a Moneda Base):** Todas las transacciones o activos cotizados en otra divisa se convierten al tipo de cambio registrado antes de sumarse al patrimonio neto consolidado.
-- **RN-05 (Bloqueo de Recompensa de Lección):** Un test solo se considera aprobado si el usuario obtiene una calificación igual o superior al 70% de aciertos.
-- **RN-06 (Restricción de Operaciones Reales):** La aplicación no procesará ni almacenará datos bancarios reales. Toda operación real deriva al usuario al sitio oficial del broker externo mediante un enlace explícito.
+| Documento | Contenido |
+|---|---|
+| [`requisitos.md`](requisitos.md) | RF-01…RF-19, RNF-01…RNF-06, RN-01…RN-08 y matriz de trazabilidad |
+| [`casos-uso.md`](casos-uso.md) | CU-01…CU-13 y especificación de los principales |
+| [`modelo-datos/script-base-datos.sql`](modelo-datos/script-base-datos.sql) | Script completo de MySQL con datos de prueba |
+| [`modelo-datos/migraciones/`](modelo-datos/migraciones/) | Cambios de esquema para bases ya creadas (C-26, C-28) |
+| [`prototipos-figma/enlace-figma.md`](prototipos-figma/enlace-figma.md) | Prototipos de la interfaz |
 
 ---
 
-## 3. Arquitectura del Sistema (3 Capas)
+## 1. Módulos
 
-La aplicación sigue el patrón arquitectónico en **3 Capas (Layered Architecture)** para garantizar la mantenibilidad, escalabilidad y la separación de responsabilidades:
+| Módulo | Funcionalidad | Casos de uso |
+|---|---|---|
+| Usuarios y perfil | Registro, login con BCrypt, nombre, contraseña y divisa base | CU-01, CU-02 |
+| Simulador (Paper Trading) | Catálogo, compra y venta con dinero ficticio, cartera con P&L, historial, mercado simulado por días, reinicio | CU-03…CU-07, CU-13 |
+| Multidivisa | EUR como pivote, conversión a la divisa base y aviso de tipos de cambio desactualizados | — (RN-04) |
+| Educación | Ruta por niveles, lecciones, test con corrección y medidor de preparación | CU-08 |
+| Brokers | Directorio con filtros y salida segura a la web oficial | CU-09 |
+| Presupuestos | Límites mensuales por categoría, gastos y alertas al 80 % y al 100 % | CU-10, CU-11 |
+| Administración | Tipos de cambio, precios, simulación de mercado, brokers, lecciones y preguntas | CU-12 |
+
+## 2. Arquitectura en 3 capas
 
 ```text
-+-------------------------------------------------------+
-|   Capa de Presentación (UI)                           |
-|   - Vistas FXML / CSS (JavaFX)                        |
-|   - Controladores de Interfaz (package controller)    |
-+---------------------------+---------------------------+
-                            |
-                            v
-+-------------------------------------------------------+
-|   Capa de Lógica de Negocio (Service)                 |
-|   - Servicios del Sistema (package service)           |
-|   - Validación de RN-01 a RN-06                       |
-+---------------------------+---------------------------+
-                            |
-                            v
-+-------------------------------------------------------+
-|   Capa de Persistencia y Datos (DAO / Database)       |
-|   - Objetos de Acceso a Datos (package dao - JDBC)    |
-|   - Base de Datos Relacional MySQL                    |
-+-------------------------------------------------------+
+ Presentación   controller/  + resources/fxml + resources/css   (JavaFX)
+      │            solo habla con servicios, obtenidos de FabricaServicios
+      ▼
+ Negocio        service/      reglas RN-01…RN-08, cálculos y validaciones
+      │            no depende de JavaFX ni de JDBC; recibe los DAO por constructor
+      ▼
+ Datos          dao/ (interfaces) + dao/jdbc/ (implementaciones JDBC)
+      │            únicas clases que ejecutan SQL; Transaccion / GestorTransacciones (C-25)
+      ▼
+ Persistencia   MySQL 8 (claves foráneas, UNIQUE y CHECK)
 ```
 
-1. **Capa de Presentación:** Gestión de la interfaz con JavaFX. Captura los eventos del usuario y actualiza los componentes visuales.
-2. **Capa de Lógica de Negocio:** Aplica las validaciones del sistema, cálculos de rentabilidad/gastos y control de umbrales.
-3. **Capa de Persistencia:** Ejecuta consultas y actualizaciones mediante **JDBC** sobre la base de datos **MySQL**.
+- **Paquetes:** `model` (entidades), `dao`, `dao.jdbc`, `service`, `controller` y `util` (conexión, sesión, navegación y formato).
+- **Inyección de dependencias manual:** `FabricaServicios` es el único sitio donde se eligen las implementaciones JDBC. Gracias a ello, las pruebas sustituyen los DAO por versiones en memoria.
+- **Transacciones:** las operaciones que modifican varias filas o tablas usan una `Transaccion`, con lectura bloqueada (`FOR UPDATE`) y *rollback* automático si algo falla. Son la compra, la venta, el reinicio del simulador, el cambio de divisa, el guardado de límites, el resultado del test y el movimiento de precios.
+- **Importes:** siempre `BigDecimal` (C-11). El saldo se redondea a céntimos y las cantidades admiten hasta 4 decimales (C-24).
 
----
+## 3. Modelo de datos (12 tablas)
 
-## 4. Estructura de Paquetes en Java
+`divisas`, `usuarios`, `activos`, `operaciones_simuladas`, `posiciones_cartera`, `lecciones`, `preguntas`, `progresos_lecciones`, `categorias_gastos`, `presupuestos`, `gastos` y `brokers`.
 
-El código fuente en `src/main/java/com/eduwealth/` está organizado de la siguiente manera:
+Cambios respecto a la v1.0:
+- **Tabla nueva:** `preguntas` (C-01).
+- **Columnas nuevas:**
+  - `usuarios.rol` (C-02) y `usuarios.capital_inicial` (C-28).
+  - `operaciones_simuladas.pnl_realizado` (C-04).
+  - `divisas.fecha_actualizacion` (C-08) y `activos.fecha_actualizacion` (C-26).
+  - `brokers.comision_minima`, `tipos_activo` y `nivel_recomendado` (C-22).
+- **Restricciones:** `UNIQUE (usuario, categoría, mes, año)` en presupuestos (C-03) y restricciones `CHECK` de integridad (C-23).
 
-- `com.eduwealth.model`: Entidades POJO (`Usuario`, `Activo`, `PosicionCartera`, `Gasto`, `CategoriaGasto`, `Leccion`, `Broker`).
-- `com.eduwealth.dao`: Interfaces e implementaciones JDBC para el acceso a datos.
-- `com.eduwealth.service`: Clases de negocio (`SimuladorService`, `PresupuestoService`, `EducacionService`).
-- `com.eduwealth.controller`: Controladores FXML de JavaFX.
+## 4. Tecnologías
 
----
-
-## 5. Documentación Adjunta
-
-Para profundizar en los detalles técnicos del proyecto, consulta los documentos específicos dentro de la carpeta `/docs`:
-
-- **Requisitos del Sistema ([`/docs/requisitos.md`](requisitos.md)):** Catálogo de Requisitos Funcionales (RF) y No Funcionales (RNF).
-- **Casos de Uso y Especificaciones ([`/docs/casos-uso.md`](casos-uso.md)):** Tabla de casos de uso y especificaciones detalladas.
-- **Modelo de Datos y Script SQL ([`/docs/modelo-datos/`](modelo-datos/)):** Diagrama Entidad-Relación, diccionario de datos y scripts de creación de tablas en MySQL.
-- **Prototipos de UI/UX en Figma ([`/docs/prototipos-figma/`](prototipos-figma/)):** Enlaces, capturas y pantallas navegables de la aplicación.
+| Elemento | Tecnología |
+|---|---|
+| Lenguaje | Java 21 (LTS) |
+| Interfaz | JavaFX 21 (FXML + CSS); prototipos en Figma |
+| Persistencia | MySQL 8 con JDBC (MySQL Connector/J) |
+| Seguridad | BCrypt (jBCrypt) |
+| Construcción | Maven con *wrapper* (`mvnw`) |
+| Pruebas | JUnit 5 (pruebas unitarias de los servicios con DAO en memoria) |
+| Entorno | Visual Studio Code (C-21) |
+| Control de versiones | Git y GitHub |

@@ -78,7 +78,7 @@ El usuario demo tiene operaciones y precios que han cambiado con el uso (pruebas
 
 **Administración completa (CU-12, C-29)**: `AdminService` (todo comprueba `comprobarAdmin`; tipos de cambio con EUR fijo, precio de activos, `simularDiaDeMercado`, CRUD de brokers con la misma validación de URL que `BrokerService`, CRUD de lecciones y preguntas; borrar una lección borra en cascada sus preguntas y el progreso) y métodos de escritura en `DivisaDAO`, `BrokerDAO`, `LeccionDAO`, `PreguntaDAO`. Pantalla `admin.fxml` / `AdminController` con pestañas Mercado y divisas / Brokers / Lecciones; botón «Panel de administración» del menú (`navAdmin`) visible solo para ADMIN. 65 tests.
 
-**Todos los módulos funcionales están hechos.** Pendiente, en este orden: 1) README (descripción, tecnologías, instrucciones) · 2) refactorizaciones, optimizaciones, registro de IA y documento v2.
+**Todos los módulos funcionales están hechos.** El script SQL completo se ha verificado en una base limpia (esquema idéntico a la base con migraciones) y `docs/requisitos.md`, `casos-uso.md`, `analisis-diseno.md` y `prototipos-figma/enlace-figma.md` están actualizados a v1.0 + v1.1 (con matriz de trazabilidad RF → CU → RN → clase). Pendiente, en este orden: 1) README (descripción, tecnologías, instrucciones) · 2) refactorizaciones, optimizaciones, registro de IA y documento v2.
 
 Si un `python - <<'EOF'` con mucho código falla con «unexpected EOF», escribir el script en un archivo del scratchpad y ejecutarlo.
 

@@ -19,27 +19,30 @@ El prototipo completo e interactivo del proyecto está disponible en la platafor
 El diseño visual abarca las 6 vistas principales de la aplicación, manteniendo una coherencia estética moderna, paleta de colores limpia (tonos azules, grises y verdes de acento) e interfaz íntegramente en español:
 
 1. **Panel Principal (Dashboard General):**
-   * Vista consolidada con resumen del saldo ficticio (RN-01), gráficos de rendimiento temporal y métricas rápidas de presupuesto.
+   * Patrimonio total consolidado (RN-04), presupuesto del mes con su estado (RN-03), medidor de preparación (RN-07), resumen de cartera, novedades y broker recomendado.
    * Menú lateral de navegación persistente con estado activo (*active state*).
 
-2. **Simulador de Inversiones (Paper Trading - CU-04 / CU-05):**
-   * Cartera de activos en propiedad, buscador de acciones/ETFs y formulario para simular órdenes de compra/venta.
-   * Mapeo visual del capital virtual de 10.000,00 € y botón de restablecimiento de saldo.
+2. **Simulador de Inversiones (Paper Trading, CU-03 a CU-07):**
+   * Cartera con su P&L, catálogo con buscador y formulario de órdenes de compra y venta (RN-01, RN-02).
+   * Saldo virtual de 10.000 € y brokers recomendados.
 
-3. **Presupuestos y Control de Gastos (CU-08 / CU-09):**
-   * Tarjetas de categorías con barras de progreso asociadas a los umbrales de alerta.
-   * Indicadores de estado: **Verde** (Normal <80%), **Amarillo** (Advertencia ≥80% - RN-02) y **Rojo** (Exceso ≥100% - RN-03).
+3. **Presupuestos y Control de Gastos (CU-10, CU-11):**
+   * Tarjetas de categorías con barras de progreso según los umbrales de alerta.
+   * Indicadores de estado (RN-03): **verde**, dentro del límite (< 80 %); **ámbar**, en alerta (≥ 80 %); **rojo**, presupuesto excedido (≥ 100 %).
 
-4. **Módulo de Educación Financiera (CU-10):**
-   * Listado de lecciones ordenadas por nivel de dificultad (Principiante, Intermedio, Avanzado).
-   * Barras de progreso de aprendizaje requeridas para habilitar la operativa avanzada del simulador (RN-05).
+4. **Módulo de Educación Financiera (CU-08):**
+   * Lecciones ordenadas por nivel de dificultad (principiante, intermedio y avanzado), con bloqueo del nivel siguiente hasta superar el actual (RN-08).
+   * Medidor de preparación para la inversión real (RN-07) y nota de los test (RN-05).
 
-5. **Directorio de Brokers Regulados (CU-11):**
-   * Catálogo comparativo de entidades financieras con filtros de comisiones y regulación.
-   * Banner informativo sobre la política de no procesamiento bancario real (RN-06) y botones de derivación a webs oficiales.
+5. **Directorio de Brokers Regulados (CU-09):**
+   * Catálogo comparativo de brokers con filtros por comisiones, tipo de activo, regulación y nivel.
+   * Banner informativo sobre la política de no procesamiento bancario real (RN-06) y botones de derivación a las webs oficiales.
 
-6. **Configuración de Perfil y Preferencias (CU-03):**
-   * Gestión de datos de usuario, cambio de contraseña y selector de divisa base de referencia (EUR, USD, GBP - RN-04).
+6. **Configuración de Perfil y Preferencias (CU-02, CU-13):**
+   * Datos de usuario, cambio de contraseña y selector de divisa base (EUR, USD, GBP, RN-04).
+   * Botón para reiniciar el saldo virtual a 10.000 € (RF-19).
+
+> **Implementación:** la aplicación JavaFX reproduce estas seis pantallas y añade la vista de lección y test, la ventana «Gestionar límites» de presupuestos y el panel de administración (CU-12), que no estaban prototipados. Las diferencias de comportamiento respecto al documento v1.0 están justificadas en [`../cambios/cambios-v1.1.md`](../cambios/cambios-v1.1.md).
 
 ---
 
