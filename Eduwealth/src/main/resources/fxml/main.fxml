@@ -27,6 +27,10 @@
             <Button fx:id="navEducacion" text="✎   Educación" styleClass="nav-boton" maxWidth="Infinity" onAction="#irEducacion"/>
             <Button fx:id="navBrokers" text="⌂   Brokers" styleClass="nav-boton" maxWidth="Infinity" onAction="#irBrokers"/>
             <Button fx:id="navConfiguracion" text="⚙   Configuración" styleClass="nav-boton" maxWidth="Infinity" onAction="#irConfiguracion"/>
+            <!-- CU-12: solo visible para el rol ADMIN -->
+            <Label fx:id="seccionAdmin" text="ADMINISTRACIÓN" styleClass="sidebar-seccion, sidebar-seccion-admin" visible="false" managed="false"/>
+            <Button fx:id="navAdmin" text="⚑   Panel de administración" styleClass="nav-boton" maxWidth="Infinity"
+                    onAction="#irAdmin" visible="false" managed="false"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 

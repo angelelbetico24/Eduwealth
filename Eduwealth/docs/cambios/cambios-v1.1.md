@@ -30,6 +30,7 @@ Este apartado recoge **qué se cambia, por qué y cuál es la solución adoptada
 | C-26 | Requisito / Modelo de datos | Movimiento simulado del mercado por días transcurridos | 6.3, RF-07, CU-06, CU-12, 6.10 |
 | C-27 | Caso de uso | Gestión de los límites mensuales de presupuesto | RF-17, CU-10 |
 | C-28 | Regla de negocio / Modelo de datos | Cambio de divisa base completo y capital inicial por usuario | RF-03, RN-04, C-07, 6.10 |
+| C-29 | Caso de uso | Alcance del panel de administración | CU-12, 6.7 |
 | C-12 | Regla de negocio | Nueva RN-07: fórmula del medidor de preparación | RF-13 |
 | C-13 | Regla de negocio | Nueva RN-08: desbloqueo de lecciones por nivel | 6.6, 6.13 |
 | C-14 | Requisito | Nuevo RF-19 / CU-13: reiniciar simulador | 6.4, 6.7, 6.13 |
@@ -170,6 +171,22 @@ CREATE TABLE preguntas (
   - Las bases ya creadas se actualizan con `docs/modelo-datos/migraciones/002_C-28_capital_inicial_usuarios.sql`, sin pérdida de datos.
   - **Reinicio del simulador (RF-19, C-14):** restablece el saldo y el capital inicial a 10.000 en la divisa base actual, y borra posiciones e historial en la misma transacción.
   - Antes de aplicar el cambio de divisa, la pantalla pide confirmación indicando el tipo de cambio.
+
+### C-29 · Alcance del panel de administración
+- **Problema:** CU-12 solo dice que el administrador «gestiona el catálogo de lecciones, actualiza los tipos de cambio de divisas y mantiene las fichas de los brokers». No concreta qué puede editar, cómo se protege el acceso ni qué pasa con los datos de los usuarios al borrar contenido.
+- **Solución:**
+  - **Acceso:** la opción «Panel de administración» solo aparece en el menú para el rol `ADMIN` (C-02). Además, **cada operación del servicio vuelve a comprobar el rol**, así que no basta con ocultar el botón.
+  - **Mercado y divisas:**
+    - Edición del tipo de cambio de cada divisa, que actualiza su fecha (C-08). El **EUR no se puede modificar**, porque es la divisa pivote y vale siempre 1 (C-06).
+    - Corrección manual del precio de cualquier activo (C-15).
+    - Botón **«Simular un día de mercado»** (C-26), que pide confirmación porque afecta a todos los usuarios.
+  - **Brokers:** alta, edición y baja de fichas con los campos de filtrado de C-22. El enlace oficial se valida con la misma regla que la redirección (RF-15): solo `http`/`https` con dominio.
+  - **Lecciones:**
+    - Alta, edición y baja de lecciones, y de sus preguntas tipo test (cuatro opciones y una correcta, C-01).
+    - Las preguntas se añaden después de guardar la lección.
+    - **Eliminar una lección borra también sus preguntas y el progreso de los usuarios en ella** (claves foráneas en cascada). Por eso la pantalla pide una confirmación que lo explica.
+    - Añadir una lección nueva a un nivel puede volver a bloquear los niveles siguientes a quien no la haya aprobado, como establece RN-08.
+  - No se añaden pantallas para crear divisas, activos o categorías nuevas. Siguen gestionándose desde el script SQL, para no añadir complejidad que el diseño no pide.
 
 ---
 

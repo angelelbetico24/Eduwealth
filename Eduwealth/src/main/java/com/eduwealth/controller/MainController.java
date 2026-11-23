@@ -7,6 +7,7 @@ import com.eduwealth.service.FabricaServicios;
 import com.eduwealth.util.Navegador;
 import com.eduwealth.util.Sesion;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -14,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -40,6 +42,10 @@ public class MainController {
     @FXML
     private Button navConfiguracion;
     @FXML
+    private Button navAdmin;
+    @FXML
+    private Label seccionAdmin;
+    @FXML
     private Label iniciales;
     @FXML
     private Label nombreUsuario;
@@ -58,9 +64,15 @@ public class MainController {
                 Seccion.PRESUPUESTOS, navPresupuestos,
                 Seccion.EDUCACION, navEducacion,
                 Seccion.BROKERS, navBrokers,
-                Seccion.CONFIGURACION, navConfiguracion));
+                Seccion.CONFIGURACION, navConfiguracion,
+                Seccion.ADMIN, navAdmin));
 
         refrescarUsuario();
+        boolean admin = Sesion.getUsuario().esAdmin();
+        for (Node n : List.of(navAdmin, seccionAdmin)) {
+            n.setVisible(admin);
+            n.setManaged(admin);
+        }
         actualizarMercado();
         mostrar(Seccion.INICIO);
     }
@@ -148,6 +160,11 @@ public class MainController {
     @FXML
     private void irConfiguracion() {
         mostrar(Seccion.CONFIGURACION);
+    }
+
+    @FXML
+    private void irAdmin() {
+        mostrar(Seccion.ADMIN);
     }
 
     @FXML

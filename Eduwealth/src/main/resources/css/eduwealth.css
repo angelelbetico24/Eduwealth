@@ -716,3 +716,48 @@
     -fx-cursor: hand;
 }
 .boton-aviso:hover { -fx-background-color: #fef3c7; }
+
+/* ---------- Administración ---------- */
+.sidebar-seccion-admin { -fx-padding: 14 8 6 8; }
+
+.pestanas-admin > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: transparent;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8 8 0 0;
+}
+.pestanas-admin > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: white;
+    -fx-border-color: -ew-borde -ew-borde transparent -ew-borde;
+    -fx-border-radius: 8 8 0 0;
+}
+.pestanas-admin > .tab-header-area > .headers-region > .tab .tab-label { -fx-text-fill: -ew-texto-suave; -fx-font-weight: bold; }
+.pestanas-admin > .tab-header-area > .headers-region > .tab:selected .tab-label { -fx-text-fill: -ew-primario; }
+.pestanas-admin > .tab-header-area > .tab-header-background { -fx-background-color: transparent; }
+.pestanas-admin > .tab-content-area { -fx-background-color: transparent; }
+.contenido-pestana { -fx-padding: 18 0 0 0; }
+
+.lista-admin {
+    -fx-background-color: white;
+    -fx-border-color: -ew-borde;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+.lista-admin .list-cell { -fx-padding: 9 10; -fx-background-color: white; -fx-text-fill: -ew-texto; }
+.lista-admin .list-cell:filled:hover { -fx-background-color: #f8fafc; }
+.lista-admin .list-cell:filled:selected { -fx-background-color: #dbeafe; -fx-text-fill: -ew-texto; }
+
+.text-area { -fx-background-radius: 8; -fx-border-color: -ew-borde; -fx-border-radius: 8; }
+.text-area:focused { -fx-border-color: -ew-primario; }
+.text-area.campo-error { -fx-border-color: -ew-rojo; }
+
+.boton-peligro {
+    -fx-background-color: white;
+    -fx-text-fill: -ew-rojo;
+    -fx-border-color: #fecaca;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-pref-height: 40;
+    -fx-padding: 0 16;
+    -fx-cursor: hand;
+}
+.boton-peligro:hover { -fx-background-color: #fef2f2; }

@@ -14,6 +14,8 @@ public enum Seccion {
             "Lecciones por niveles con test de evaluación y medidor de preparación."),
     BROKERS("Brokers", "brokers",
             "Compara brokers regulados y accede a su web oficial cuando estés preparado."),
+    ADMIN("Panel de administración", "admin",
+            "Tipos de cambio, precios, brokers y lecciones (solo administradores)."),
     CONFIGURACION("Configuración", "configuracion",
             "Cambia tu moneda base, tu contraseña o reinicia el simulador.");
 

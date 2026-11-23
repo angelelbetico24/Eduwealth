@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- CU-12: Administración de contenidos, divisas y brokers (solo rol ADMIN) -->
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eduwealth.controller.AdminController"
+            fitToWidth="true" styleClass="scroll-contenido">
+
+    <VBox styleClass="pagina">
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="4">
+                <Label text="Panel de Administración" styleClass="titulo"/>
+                <Label text="Mantén actualizados los tipos de cambio, los precios, los brokers y las lecciones."
+                       styleClass="subtitulo"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="Administrador" styleClass="chip"/>
+        </HBox>
+
+        <Label fx:id="mensaje" styleClass="mensaje-exito" wrapText="true" visible="false" managed="false"/>
+
+        <TabPane fx:id="pestanas" tabClosingPolicy="UNAVAILABLE" styleClass="pestanas-admin">
+
+            <!-- ================= Mercado y divisas ================= -->
+            <Tab text="Mercado y divisas">
+                <VBox spacing="20" styleClass="contenido-pestana">
+                    <VBox styleClass="tarjeta-panel">
+                        <Label text="Tipos de cambio" styleClass="tarjeta-titulo"/>
+                        <Label text="Unidades de cada divisa por 1 € (el EUR es la divisa pivote y vale siempre 1). Un tipo con más de 7 días se marca como desactualizado."
+                               styleClass="nota" wrapText="true"/>
+                        <GridPane fx:id="tablaDivisas" hgap="14" vgap="8"/>
+                    </VBox>
+
+                    <VBox styleClass="tarjeta-panel">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <VBox>
+                                <Label text="Precios del catálogo" styleClass="tarjeta-titulo"/>
+                                <Label text="Corrige un precio a mano o simula un día de mercado para todos los activos (C-26)."
+                                       styleClass="nota"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="▶  Simular un día de mercado" styleClass="boton-oscuro" minWidth="-Infinity"
+                                    onAction="#simularDia"/>
+                        </HBox>
+                        <GridPane fx:id="tablaActivos" hgap="14" vgap="8"/>
+                    </VBox>
+                </VBox>
+            </Tab>
+
+            <!-- ================= Brokers ================= -->
+            <Tab text="Brokers">
+                <HBox spacing="20" styleClass="contenido-pestana">
+                    <VBox styleClass="tarjeta-panel" prefWidth="300" minWidth="260">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Directorio" styleClass="tarjeta-titulo"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="+ Nuevo" styleClass="boton-suave" onAction="#nuevoBroker"/>
+                        </HBox>
+                        <ListView fx:id="listaBrokers" prefHeight="420" styleClass="lista-admin"/>
+                    </VBox>
+
+                    <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="8">
+                        <Label fx:id="tituloBroker" styleClass="tarjeta-titulo"/>
+                        <Label text="Nombre" styleClass="etiqueta-campo"/>
+                        <TextField fx:id="brokerNombre"/>
+                        <Label text="Descripción" styleClass="etiqueta-campo"/>
+                        <TextArea fx:id="brokerDescripcion" prefRowCount="2" wrapText="true"/>
+                        <HBox spacing="12">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Información de comisiones" styleClass="etiqueta-campo"/>
+                                <TextField fx:id="brokerComisiones" promptText="Ej.: 1 € por operación"/>
+                            </VBox>
+                            <VBox spacing="6" prefWidth="170">
+                                <Label text="Comisión mínima (€)" styleClass="etiqueta-campo"/>
+                                <TextField fx:id="brokerComisionMinima" promptText="0 = sin mínimo"/>
+                            </VBox>
+                        </HBox>
+                        <Label text="Tipos de activo" styleClass="etiqueta-campo"/>
+                        <FlowPane fx:id="brokerTipos" hgap="16" vgap="6">
+                            <CheckBox fx:id="tipoAccion" text="Acciones"/>
+                            <CheckBox fx:id="tipoEtf" text="ETF"/>
+                            <CheckBox fx:id="tipoFondo" text="Fondos"/>
+                            <CheckBox fx:id="tipoCripto" text="Cripto"/>
+                        </FlowPane>
+                        <HBox spacing="12">
+                            <VBox spacing="6" prefWidth="200">
+                                <Label text="Nivel recomendado" styleClass="etiqueta-campo"/>
+                                <ComboBox fx:id="brokerNivel" maxWidth="Infinity"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                <Label text="Regulación" styleClass="etiqueta-campo"/>
+                                <TextField fx:id="brokerRegulacion" promptText="Ej.: CNMV, BaFin"/>
+                            </VBox>
+                        </HBox>
+                        <Label text="Enlace oficial (https://…)" styleClass="etiqueta-campo"/>
+                        <TextField fx:id="brokerUrl"/>
+                        <Label fx:id="errorBroker" styleClass="mensaje-error" wrapText="true" visible="false" managed="false"/>
+                        <HBox spacing="10">
+                            <Button text="Guardar broker" styleClass="boton-primario" onAction="#guardarBroker"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="botonEliminarBroker" text="Eliminar" styleClass="boton-peligro"
+                                    onAction="#eliminarBroker"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </Tab>
+
+            <!-- ================= Lecciones ================= -->
+            <Tab text="Lecciones">
+                <HBox spacing="20" styleClass="contenido-pestana">
+                    <VBox styleClass="tarjeta-panel" prefWidth="300" minWidth="260">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Catálogo" styleClass="tarjeta-titulo"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="+ Nueva" styleClass="boton-suave" onAction="#nuevaLeccion"/>
+                        </HBox>
+                        <ListView fx:id="listaLecciones" prefHeight="560" styleClass="lista-admin"/>
+                    </VBox>
+
+                    <VBox spacing="20" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                        <VBox styleClass="tarjeta-panel" spacing="8">
+                            <Label fx:id="tituloLeccion" styleClass="tarjeta-titulo"/>
+                            <HBox spacing="12">
+                                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                    <Label text="Título" styleClass="etiqueta-campo"/>
+                                    <TextField fx:id="leccionTitulo"/>
+                                </VBox>
+                                <VBox spacing="6" prefWidth="200">
+                                    <Label text="Nivel" styleClass="etiqueta-campo"/>
+                                    <ComboBox fx:id="leccionNivel" maxWidth="Infinity"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="Contenido (separa los párrafos con una línea en blanco; los TÉRMINOS EN MAYÚSCULAS se resaltan)"
+                                   styleClass="etiqueta-campo" wrapText="true"/>
+                            <TextArea fx:id="leccionContenido" prefRowCount="8" wrapText="true"/>
+                            <Label fx:id="errorLeccion" styleClass="mensaje-error" wrapText="true" visible="false" managed="false"/>
+                            <HBox spacing="10">
+                                <Button text="Guardar lección" styleClass="boton-primario" onAction="#guardarLeccion"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button fx:id="botonEliminarLeccion" text="Eliminar lección" styleClass="boton-peligro"
+                                        onAction="#eliminarLeccion"/>
+                            </HBox>
+                        </VBox>
+
+                        <VBox fx:id="tarjetaPreguntas" styleClass="tarjeta-panel" spacing="8">
+                            <HBox alignment="CENTER_LEFT">
+                                <Label fx:id="tituloPreguntas" styleClass="tarjeta-titulo"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="+ Nueva pregunta" styleClass="boton-suave" onAction="#nuevaPregunta"/>
+                            </HBox>
+                            <ListView fx:id="listaPreguntas" prefHeight="150" styleClass="lista-admin"/>
+                            <Label text="Enunciado" styleClass="etiqueta-campo"/>
+                            <TextField fx:id="preguntaEnunciado"/>
+                            <GridPane hgap="10" vgap="8">
+                                <Label text="A)" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <TextField fx:id="opcionA" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS"/>
+                                <Label text="B)" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                                <TextField fx:id="opcionB" GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.hgrow="ALWAYS"/>
+                                <Label text="C)" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <TextField fx:id="opcionC" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <Label text="D)" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                                <TextField fx:id="opcionD" GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+                            </GridPane>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Label text="Respuesta correcta" styleClass="etiqueta-campo"/>
+                                <ComboBox fx:id="preguntaCorrecta" prefWidth="90"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="Guardar pregunta" styleClass="boton-primario" onAction="#guardarPregunta"/>
+                                <Button fx:id="botonEliminarPregunta" text="Eliminar" styleClass="boton-peligro"
+                                        onAction="#eliminarPregunta"/>
+                            </HBox>
+                            <Label fx:id="errorPregunta" styleClass="mensaje-error" wrapText="true" visible="false" managed="false"/>
+                        </VBox>
+                    </VBox>
+                </HBox>
+            </Tab>
+        </TabPane>
+    </VBox>
+</ScrollPane>
