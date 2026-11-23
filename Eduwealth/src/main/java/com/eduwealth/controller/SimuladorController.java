@@ -187,6 +187,9 @@ public class SimuladorController {
     @FXML
     private void modoVenta() {
         toggleVenta.setSelected(true);
+        if (resumen == null) {
+            return; // la cartera no se pudo cargar (ya se muestra el error)
+        }
         PosicionDetalle posicion = tablaPosiciones.getSelectionModel().getSelectedItem();
         if (posicion == null && !resumen.posiciones().isEmpty() && titulosPoseidos(activoSeleccionado).signum() == 0) {
             tablaPosiciones.getSelectionModel().selectFirst();

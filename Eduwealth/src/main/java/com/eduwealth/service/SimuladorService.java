@@ -14,6 +14,7 @@ import com.eduwealth.model.TipoActivo;
 import com.eduwealth.model.TipoOperacion;
 import com.eduwealth.model.Usuario;
 import com.eduwealth.util.Formato;
+import com.eduwealth.util.Numeros;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -149,7 +150,7 @@ public class SimuladorService {
         }
         BigDecimal cantidad;
         try {
-            cantidad = new BigDecimal(texto.trim().replace(',', '.'));
+            cantidad = Numeros.leer(texto); // 1.000 son mil títulos, no uno
         } catch (NumberFormatException e) {
             throw new ValidacionException("cantidad", "La cantidad debe ser un número (por ejemplo 10 o 0,5).");
         }
@@ -173,7 +174,8 @@ public class SimuladorService {
                               BigDecimal cantidad, BigDecimal saldo, BigDecimal titulosPoseidos) {
         BigDecimal importeActivo = cantidad.multiply(activo.getPrecioActual());
         BigDecimal importeBase = aCentimos(divisaService.convertir(importeActivo, divisaActivo, base));
-        if (importeBase.compareTo(IMPORTE_MINIMO) < 0) {
+        boolean ventaTotal = tipo == TipoOperacion.VENTA && cantidad.compareTo(titulosPoseidos) == 0;
+        if (importeBase.compareTo(IMPORTE_MINIMO) < 0 && !ventaTotal) {
             return new Cotizacion(importeActivo, importeBase, false, "El importe mínimo de una operación es 0,01.");
         }
         if (tipo == TipoOperacion.COMPRA && importeBase.compareTo(saldo) > 0) {
@@ -252,11 +254,14 @@ public class SimuladorService {
 
             BigDecimal precio = activo.getPrecioActual();
             BigDecimal ingreso = aCentimos(divisaService.convertir(cantidad.multiply(precio), divisaActivo, base));
-            validarImporteMinimo(ingreso);
+            BigDecimal restantes = poseidos.subtract(cantidad);
+            // Vender todo siempre está permitido: un resto de valor inferior a 0,01 no debe quedar atrapado (C-24)
+            if (restantes.signum() != 0) {
+                validarImporteMinimo(ingreso);
+            }
             BigDecimal pnlRealizado = precio.subtract(posicion.getPrecioMedioCompra())
                     .multiply(cantidad).setScale(4, RoundingMode.HALF_UP);
 
-            BigDecimal restantes = poseidos.subtract(cantidad);
             if (restantes.signum() == 0) {
                 posicionDAO.eliminar(tx, posicion.getIdPosicion());
             } else {

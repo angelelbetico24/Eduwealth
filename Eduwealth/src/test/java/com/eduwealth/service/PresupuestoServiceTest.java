@@ -108,6 +108,13 @@ class PresupuestoServiceTest {
     }
 
     @Test
+    void milEurosEscritosConPuntoDeMiles() {
+        // Revisión: antes «1.000» se guardaba como 1,00 €
+        assertEquals(new BigDecimal("1000.00"), servicio.validarImporte("1.000", "importe"));
+        assertEquals(new BigDecimal("1234.50"), servicio.validarImporte("1.234,50", "importe"));
+    }
+
+    @Test
     void elConceptoVacioSeGuardaComoNulo() {
         servicio.registrarGasto(USUARIO, OCIO, " 12,5 ", HOY, "   ", HOY);
         assertNull(gastos.todos.get(0).getConcepto());

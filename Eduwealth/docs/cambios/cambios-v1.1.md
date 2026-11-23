@@ -125,7 +125,8 @@ CREATE TABLE preguntas (
 - **Solución:**
   - Se admiten **hasta 4 decimales** en la cantidad para cualquier activo, como hacen los brokers que permiten acciones fraccionadas. Es coherente con `DECIMAL(12,4)` y con C-11.
   - El importe de cada orden se calcula en la divisa del activo y, tras convertirlo (RN-04), se **redondea a céntimos** (mitad hacia arriba) antes de restarlo o sumarlo al saldo. El precio medio de compra se guarda con 4 decimales, y el P&L realizado con 4 decimales en la divisa del activo.
-  - **Importe mínimo por orden: 0,01** en la divisa base. Una orden más pequeña se rechaza.
+  - **Importe mínimo por orden: 0,01** en la divisa base. Una orden más pequeña se rechaza, **salvo la venta de toda la posición**: así un resto de valor inferior a un céntimo nunca queda atrapado en la cartera.
+  - **Lectura de números:** se aceptan la coma decimal y el punto de miles españoles (`12,5`, `1.000`, `1.000,50`) y, por comodidad, también el punto decimal (`0.5`). Los casos ambiguos, como `1,000.50`, se rechazan. Así `1.000` nunca se interpreta en silencio como 1. Se aplica a cantidades, importes, límites, precios y tipos de cambio.
   - Los totales de la cartera se muestran redondeados a céntimos. Por el redondeo de cada orden, el patrimonio puede variar en algún céntimo tras comprar y vender al mismo precio, igual que en un broker real.
 
 ### C-25 · Transacciones en la capa de acceso a datos

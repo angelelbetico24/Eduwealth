@@ -10,6 +10,7 @@ import com.eduwealth.model.EstadoPresupuesto;
 import com.eduwealth.model.Gasto;
 import com.eduwealth.model.Presupuesto;
 import com.eduwealth.model.ResumenCategoria;
+import com.eduwealth.util.Numeros;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -236,9 +237,9 @@ public class PresupuestoService {
         }
         BigDecimal importe;
         try {
-            importe = new BigDecimal(texto.trim().replace(',', '.'));
+            importe = Numeros.leer(texto); // 1.000 son mil euros, no uno
         } catch (NumberFormatException e) {
-            throw new ValidacionException(campo, "El importe debe ser un número (por ejemplo 25 o 12,50).");
+            throw new ValidacionException(campo, "El importe debe ser un número (por ejemplo 25, 12,50 o 1.000).");
         }
         if (importe.signum() <= 0) {
             throw new ValidacionException(campo, "El importe debe ser mayor que cero.");

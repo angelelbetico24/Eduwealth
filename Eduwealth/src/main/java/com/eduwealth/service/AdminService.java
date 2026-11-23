@@ -15,6 +15,7 @@ import com.eduwealth.model.Nivel;
 import com.eduwealth.model.Pregunta;
 import com.eduwealth.model.TipoActivo;
 import com.eduwealth.model.Usuario;
+import com.eduwealth.util.Numeros;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -237,7 +238,7 @@ public class AdminService {
         }
         BigDecimal valor;
         try {
-            valor = new BigDecimal(texto.strip().replace(',', '.'));
+            valor = Numeros.leer(texto);
         } catch (NumberFormatException e) {
             throw new ValidacionException(campo, nombre + " debe ser un número.");
         }
@@ -255,8 +256,15 @@ public class AdminService {
 
     /** Comisión mínima: vacía o 0 significa «sin comisión mínima»; nunca negativa. */
     private static BigDecimal numeroOCero(String texto) {
-        if (texto == null || texto.isBlank() || texto.strip().replace(',', '.').matches("0+(\\.0+)?")) {
+        if (texto == null || texto.isBlank()) {
             return BigDecimal.ZERO.setScale(2);
+        }
+        try {
+            if (Numeros.leer(texto).signum() == 0) {
+                return BigDecimal.ZERO.setScale(2);
+            }
+        } catch (NumberFormatException e) {
+            // el mensaje de error lo da numero()
         }
         return numero(texto, "comision", "La comisión mínima", 2, new BigDecimal("9999.99"));
     }

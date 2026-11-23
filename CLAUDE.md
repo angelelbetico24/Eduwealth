@@ -47,7 +47,7 @@ La **fuente de verdad del diseño** es el PDF «Documento de Análisis y Diseño
 - Los controladores **solo hablan con servicios**, obtenidos de `FabricaServicios` (inyección manual). Nunca crean DAO ni ejecutan SQL.
 - Los servicios no dependen de JavaFX. Reciben DAO por constructor, así se prueban con DAO falsos en memoria (ver `AutenticacionServiceTest`).
 - Errores: `DataAccessException` envuelve `SQLException`; `ValidacionException(campo, mensaje)` para datos inválidos (el controlador marca el campo con la clase CSS `campo-error`).
-- Dinero y cantidades: **siempre `BigDecimal`** (C-11). Formato en pantalla con `util/Formato` (`10.000,00 €`).
+- Dinero y cantidades: **siempre `BigDecimal`** (C-11). Los números escritos por el usuario se leen con `util/Numeros.leer` (coma decimal y punto de miles: «1.000» = mil). Formato en pantalla con `util/Formato` (`10.000,00 €`).
 - Navegación: `Navegador.ir("vista")` cambia la pantalla completa; `Navegador.cargar("vista")` carga una vista dentro del área de contenido de `MainController`. Las secciones del menú están en el enum `Seccion` (`vista == null` → muestra «Próximamente»). Para activar un módulo: crear su FXML + controlador y asignar su vista en `Seccion`.
 - Estilos: una sola hoja `css/eduwealth.css` con las variables de color del prototipo (azul noche `#0f172a`, primario `#2563eb`, verde `#22c55e`).
 - `Sesion` guarda el usuario autenticado (estático).
@@ -64,7 +64,7 @@ Las operaciones que tocan varias tablas (compra, venta, reinicio, test) deben ir
 
 ## Estado actual (actualizar al avanzar)
 
-Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · **Simulador completo** (CU-03…CU-07: catálogo con búsqueda/filtros, compra RN-01, venta RN-02 con P&L realizado, cartera, historial, cotización en vivo) · transacciones (`Transaccion`/`GestorTransacciones`, C-25) · mercado simulado (C-26, `MercadoService`) · `SimuladorService`, `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-05, RN-07, RN-08, C-10), `PanelService` · 65 tests unitarios (todos pasan; DAO falsos compartidos en `src/test/.../DaosEnMemoria.java`).
+Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · **Simulador completo** (CU-03…CU-07: catálogo con búsqueda/filtros, compra RN-01, venta RN-02 con P&L realizado, cartera, historial, cotización en vivo) · transacciones (`Transaccion`/`GestorTransacciones`, C-25) · mercado simulado (C-26, `MercadoService`) · `SimuladorService`, `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-05, RN-07, RN-08, C-10), `PanelService` · 71 tests unitarios (todos pasan; DAO falsos compartidos en `src/test/.../DaosEnMemoria.java`).
 
 El usuario demo tiene operaciones y precios que han cambiado con el uso (pruebas propias y del usuario): no dar por supuesto su saldo ni su cartera, consultarlos. Reejecutar el script SQL lo deja como al principio.
 
@@ -93,7 +93,7 @@ Pruebas de UI: script de ayuda en el scratchpad (`ui.ps1`: foco, clic relativo a
 
 Candidatas ya detectadas (dejar el «antes» en un commit propio para que el historial lo muestre; no corregirlas antes de documentarlas):
 - Refactor: código repetido `buscarUno` / listados en todos los `*DAOJdbc` → clase base con mapeador de filas · los controladores/Fábrica instancian DAO concretos · validaciones de nombre y contraseña duplicadas entre `AutenticacionService` y `PerfilService` (y de importes entre `SimuladorService.validarCantidad` y `PresupuestoService.validarImporte`) → clase `Validaciones` común · métodos auxiliares repetidos en controladores (`mostrarMensaje`/`estilo`/`capitalizar`).
-- Optimización: `ConexionBD` abre una conexión nueva por consulta (sin pool) · cargas repetidas de divisas/activos (ya se cargan una vez en `PanelService`; hay que medir y documentar) · resumen de presupuestos con una sola consulta (`LEFT JOIN` + `SUM`) frente a una por categoría · `PresupuestoDAOJdbc.SQL_RESUMEN_MES` filtra con `MONTH(g.fecha)`/`YEAR(g.fecha)`, que impide usar el índice `idx_gastos_usuario_fecha` → cambiar a rango `fecha >= inicio AND fecha < inicio+1 mes` (como ya hace `GastoDAOJdbc.listarDelMes`); comprobar con `EXPLAIN`.
+- Optimización: `ConexionBD` abre una conexión nueva por consulta (sin pool) · cargas repetidas de divisas/activos (ya se cargan una vez en `PanelService`; hay que medir y documentar) · resumen de presupuestos con una sola consulta (`LEFT JOIN` + `SUM`) frente a una por categoría · `PresupuestoDAOJdbc.SQL_RESUMEN_MES` filtra con `MONTH(g.fecha)`/`YEAR(g.fecha)`, que impide usar el índice `idx_gastos_usuario_fecha` → cambiar a rango `fecha >= inicio AND fecha < inicio+1 mes` (como ya hace `GastoDAOJdbc.listarDelMes`); comprobar con `EXPLAIN`. · `EducacionService.corregirTest` llama a `abrirLeccion` dos veces (también vía `preguntasDelTest`) y consulta lecciones 3 veces y progreso 2 veces por envío → cargar una vez y reutilizar.
 
 ## Forma de trabajar
 

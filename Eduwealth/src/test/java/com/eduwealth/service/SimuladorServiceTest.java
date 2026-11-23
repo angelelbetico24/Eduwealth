@@ -169,6 +169,27 @@ class SimuladorServiceTest {
     }
 
     @Test
+    void sePuedeVenderUnRestoDeValorInferiorAUnCentimo() {
+        // Revisión: 0,0004 SAN × 3,98 € = 0,0016 € → 0,00 €; vender todo no debe quedar bloqueado (C-24)
+        simulador.comprar(idUsuario, SAN, new BigDecimal("1"));
+        simulador.vender(idUsuario, SAN, new BigDecimal("0.9996"));
+
+        Activo san = activos.porId.get(SAN);
+        assertTrue(simulador.cotizar(TipoOperacion.VENTA, san, EUR, EUR, new BigDecimal("0.0004"),
+                BigDecimal.ZERO, new BigDecimal("0.0004")).permitida());
+        simulador.vender(idUsuario, SAN, new BigDecimal("0.0004"));
+        assertTrue(posiciones.porId.isEmpty());
+
+        // Una compra de importe ínfimo sigue rechazándose
+        assertThrows(ValidacionException.class, () -> simulador.comprar(idUsuario, SAN, new BigDecimal("0.0001")));
+    }
+
+    @Test
+    void milTitulosEscritosConPuntoDeMiles() {
+        assertEquals(0, new BigDecimal("1000").compareTo(simulador.validarCantidad("1.000")));
+    }
+
+    @Test
     void precioMedioPonderado() {
         assertEquals(new BigDecimal("150.0000"), SimuladorService.calcularPrecioMedio(
                 new BigDecimal("10"), new BigDecimal("100"), new BigDecimal("10"), new BigDecimal("200")));
