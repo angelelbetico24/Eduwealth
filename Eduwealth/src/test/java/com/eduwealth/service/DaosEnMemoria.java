@@ -1,6 +1,7 @@
 package com.eduwealth.service;
 
 import com.eduwealth.dao.ActivoDAO;
+import com.eduwealth.dao.BrokerDAO;
 import com.eduwealth.dao.CategoriaGastoDAO;
 import com.eduwealth.dao.DivisaDAO;
 import com.eduwealth.dao.GastoDAO;
@@ -14,6 +15,7 @@ import com.eduwealth.dao.ProgresoLeccionDAO;
 import com.eduwealth.dao.Transaccion;
 import com.eduwealth.dao.UsuarioDAO;
 import com.eduwealth.model.Activo;
+import com.eduwealth.model.Broker;
 import com.eduwealth.model.CategoriaGasto;
 import com.eduwealth.model.Divisa;
 import com.eduwealth.model.Gasto;
@@ -121,6 +123,12 @@ final class DaosEnMemoria {
         @Override
         public Optional<Divisa> buscarPorCodigo(String codigo) {
             return porId.values().stream().filter(d -> d.getCodigo().equals(codigo)).findFirst();
+        }
+
+        @Override
+        public void actualizarTipoCambio(int idDivisa, BigDecimal tipoCambio, LocalDateTime fecha) {
+            porId.get(idDivisa).setTipoCambioBase(tipoCambio);
+            porId.get(idDivisa).setFechaActualizacion(fecha);
         }
     }
 
@@ -331,6 +339,24 @@ final class DaosEnMemoria {
                     .sorted(Comparator.comparing(Leccion::getNivel).thenComparing(Leccion::getIdLeccion))
                     .toList();
         }
+
+        @Override
+        public int insertar(Leccion leccion) {
+            leccion.setIdLeccion(todas.stream().mapToInt(Leccion::getIdLeccion).max().orElse(0) + 1);
+            todas.add(leccion);
+            return leccion.getIdLeccion();
+        }
+
+        @Override
+        public void actualizar(Leccion leccion) {
+            todas.removeIf(l -> l.getIdLeccion() == leccion.getIdLeccion());
+            todas.add(leccion);
+        }
+
+        @Override
+        public boolean eliminar(int idLeccion) {
+            return todas.removeIf(l -> l.getIdLeccion() == idLeccion);
+        }
     }
 
     static final class Preguntas implements PreguntaDAO {
@@ -351,6 +377,23 @@ final class DaosEnMemoria {
             Map<Integer, Integer> totales = new HashMap<>();
             todas.forEach(p -> totales.merge(p.getIdLeccion(), 1, Integer::sum));
             return totales;
+        }
+
+        @Override
+        public int insertar(Pregunta pregunta) {
+            pregunta.setIdPregunta(todas.stream().mapToInt(Pregunta::getIdPregunta).max().orElse(0) + 1);
+            todas.add(pregunta);
+            return pregunta.getIdPregunta();
+        }
+
+        @Override
+        public void actualizar(Pregunta pregunta) {
+            todas.replaceAll(p -> p.getIdPregunta() == pregunta.getIdPregunta() ? pregunta : p);
+        }
+
+        @Override
+        public boolean eliminar(int idPregunta) {
+            return todas.removeIf(p -> p.getIdPregunta() == idPregunta);
         }
     }
 
@@ -380,6 +423,32 @@ final class DaosEnMemoria {
         public void actualizar(Transaccion tx, ProgresoLeccion progreso) {
             todos.removeIf(p -> p.getIdProgreso() == progreso.getIdProgreso());
             todos.add(progreso);
+        }
+    }
+
+    static final class Brokers implements BrokerDAO {
+        final List<Broker> todos = new ArrayList<>();
+
+        @Override
+        public List<Broker> listarTodos() {
+            return new ArrayList<>(todos);
+        }
+
+        @Override
+        public int insertar(Broker broker) {
+            broker.setIdBroker(todos.size() + 1);
+            todos.add(broker);
+            return broker.getIdBroker();
+        }
+
+        @Override
+        public void actualizar(Broker broker) {
+            todos.replaceAll(b -> b.getIdBroker() == broker.getIdBroker() ? broker : b);
+        }
+
+        @Override
+        public boolean eliminar(int idBroker) {
+            return todos.removeIf(b -> b.getIdBroker() == idBroker);
         }
     }
 

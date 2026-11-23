@@ -8,4 +8,11 @@ import java.util.List;
 public interface BrokerDAO {
 
     List<Broker> listarTodos();
+
+    /** Inserta el broker y devuelve el identificador generado. */
+    int insertar(Broker broker);
+
+    void actualizar(Broker broker);
+
+    boolean eliminar(int idBroker);
 }

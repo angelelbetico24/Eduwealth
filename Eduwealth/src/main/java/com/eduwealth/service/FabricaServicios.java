@@ -36,6 +36,9 @@ public final class FabricaServicios {
     private static final MercadoService MERCADO =
             new MercadoService(new ActivoDAOJdbc(), new GestorTransaccionesJdbc(), new Random());
     private static final BrokerService BROKERS = new BrokerService(new BrokerDAOJdbc());
+    private static final AdminService ADMIN = new AdminService(new DivisaDAOJdbc(), new ActivoDAOJdbc(),
+            new BrokerDAOJdbc(), new LeccionDAOJdbc(), new PreguntaDAOJdbc(), new GestorTransaccionesJdbc(),
+            MERCADO, BROKERS);
     private static final PerfilService PERFIL = new PerfilService(new UsuarioDAOJdbc(), new PosicionCarteraDAOJdbc(),
             new OperacionSimuladaDAOJdbc(), new PresupuestoDAOJdbc(), new GastoDAOJdbc(), DIVISAS,
             new GestorTransaccionesJdbc());
@@ -75,6 +78,10 @@ public final class FabricaServicios {
 
     public static PerfilService perfil() {
         return PERFIL;
+    }
+
+    public static AdminService admin() {
+        return ADMIN;
     }
 
     public static PanelService panel() {

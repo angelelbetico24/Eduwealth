@@ -64,7 +64,7 @@ Las operaciones que tocan varias tablas (compra, venta, reinicio, test) deben ir
 
 ## Estado actual (actualizar al avanzar)
 
-Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · **Simulador completo** (CU-03…CU-07: catálogo con búsqueda/filtros, compra RN-01, venta RN-02 con P&L realizado, cartera, historial, cotización en vivo) · transacciones (`Transaccion`/`GestorTransacciones`, C-25) · mercado simulado (C-26, `MercadoService`) · `SimuladorService`, `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-05, RN-07, RN-08, C-10), `PanelService` · 59 tests unitarios (todos pasan; DAO falsos compartidos en `src/test/.../DaosEnMemoria.java`).
+Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · **Simulador completo** (CU-03…CU-07: catálogo con búsqueda/filtros, compra RN-01, venta RN-02 con P&L realizado, cartera, historial, cotización en vivo) · transacciones (`Transaccion`/`GestorTransacciones`, C-25) · mercado simulado (C-26, `MercadoService`) · `SimuladorService`, `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-05, RN-07, RN-08, C-10), `PanelService` · 65 tests unitarios (todos pasan; DAO falsos compartidos en `src/test/.../DaosEnMemoria.java`).
 
 El usuario demo tiene operaciones y precios que han cambiado con el uso (pruebas propias y del usuario): no dar por supuesto su saldo ni su cartera, consultarlos. Reejecutar el script SQL lo deja como al principio.
 
@@ -76,7 +76,11 @@ El usuario demo tiene operaciones y precios que han cambiado con el uso (pruebas
 
 **Configuración completa (RF-03, RF-19/CU-13)**: `PerfilService` (nombre, contraseña con BCrypt comprobando la actual, cambio de divisa en transacción convirtiendo saldo + capital inicial + presupuestos + gastos, reinicio del simulador) y `configuracion.fxml` / `ConfiguracionController` (refresca el menú lateral vía `setAlCambiarPerfil`). Nueva columna `usuarios.capital_inicial` (C-28, migración 002 ya aplicada); la rentabilidad usa `ResumenCartera.capitalInicial`. Probar cambios de divisa/reinicio con la cuenta **admin** (no tiene datos del usuario).
 
-Pendiente, en este orden: 1) Panel de administración (CU-12, incluye botón «Simular un día de mercado» → `MercadoService.simularUnDia`) · 2) README (descripción, tecnologías, instrucciones) · 3) refactorizaciones, optimizaciones, registro de IA y documento v2.
+**Administración — paso 1 hecho**: `AdminService` (todo comprueba `comprobarAdmin`; tipos de cambio con EUR fijo, precio de activos, `simularDiaDeMercado`, CRUD de brokers con la misma validación de URL que `BrokerService`, CRUD de lecciones y preguntas; borrar una lección borra en cascada sus preguntas y el progreso) y métodos de escritura en `DivisaDAO`, `BrokerDAO`, `LeccionDAO`, `PreguntaDAO`. 65 tests.
+
+Pendiente, en este orden: 1) **Administración — paso 2**: pantalla solo para ADMIN (botón del menú oculto a usuarios) con pestañas Mercado y divisas / Brokers / Lecciones · 2) README (descripción, tecnologías, instrucciones) · 3) refactorizaciones, optimizaciones, registro de IA y documento v2.
+
+Si un `python - <<'EOF'` con mucho código falla con «unexpected EOF», escribir el script en un archivo del scratchpad y ejecutarlo.
 
 Pruebas de UI: script de ayuda en el scratchpad (`ui.ps1`: foco, clic relativo a la ventana, teclas con SendKeys, captura, cerrar). Para diálogos modales (Alert) enviar `{ENTER}` con la acción `teclas` del script; `CopyFromScreen` también los captura. Si no existe, recrearlo con `user32` (`SetForegroundWindow`, `SetCursorPos`, `mouse_event`) y `System.Drawing`.
 

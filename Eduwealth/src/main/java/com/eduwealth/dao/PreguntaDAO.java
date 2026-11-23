@@ -13,4 +13,11 @@ public interface PreguntaDAO {
 
     /** Número de preguntas de cada lección (id_leccion → total), en una sola consulta. */
     Map<Integer, Integer> contarPorLeccion();
+
+    /** Inserta la pregunta y devuelve el identificador generado. */
+    int insertar(Pregunta pregunta);
+
+    void actualizar(Pregunta pregunta);
+
+    boolean eliminar(int idPregunta);
 }

@@ -5,11 +5,13 @@ import com.eduwealth.dao.DivisaDAO;
 import com.eduwealth.model.Divisa;
 import com.eduwealth.util.ConexionBD;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,5 +67,19 @@ public class DivisaDAOJdbc implements DivisaDAO {
                 rs.getString("simbolo"),
                 rs.getBigDecimal("tipo_cambio_base"),
                 fecha != null ? fecha.toLocalDateTime() : null);
+    }
+
+    @Override
+    public void actualizarTipoCambio(int idDivisa, BigDecimal tipoCambio, LocalDateTime fecha) {
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(
+                     "UPDATE divisas SET tipo_cambio_base = ?, fecha_actualizacion = ? WHERE id_divisa = ?")) {
+            ps.setBigDecimal(1, tipoCambio);
+            ps.setTimestamp(2, Timestamp.valueOf(fecha));
+            ps.setInt(3, idDivisa);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al actualizar el tipo de cambio.", e);
+        }
     }
 }

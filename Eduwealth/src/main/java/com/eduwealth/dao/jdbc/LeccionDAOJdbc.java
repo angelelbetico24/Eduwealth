@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,51 @@ public class LeccionDAOJdbc implements LeccionDAO {
             return lecciones;
         } catch (SQLException e) {
             throw new DataAccessException("Error al listar las lecciones.", e);
+        }
+    }
+
+    @Override
+    public int insertar(Leccion l) {
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(
+                     "INSERT INTO lecciones (titulo, contenido, nivel) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, l.getTitulo());
+            ps.setString(2, l.getContenido());
+            ps.setString(3, l.getNivel().name());
+            ps.executeUpdate();
+            try (ResultSet claves = ps.getGeneratedKeys()) {
+                claves.next();
+                l.setIdLeccion(claves.getInt(1));
+                return l.getIdLeccion();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al guardar la lección.", e);
+        }
+    }
+
+    @Override
+    public void actualizar(Leccion l) {
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(
+                     "UPDATE lecciones SET titulo = ?, contenido = ?, nivel = ? WHERE id_leccion = ?")) {
+            ps.setString(1, l.getTitulo());
+            ps.setString(2, l.getContenido());
+            ps.setString(3, l.getNivel().name());
+            ps.setInt(4, l.getIdLeccion());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al guardar la lección.", e);
+        }
+    }
+
+    @Override
+    public boolean eliminar(int idLeccion) {
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement("DELETE FROM lecciones WHERE id_leccion = ?")) {
+            ps.setInt(1, idLeccion);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al eliminar la lección.", e);
         }
     }
 }
