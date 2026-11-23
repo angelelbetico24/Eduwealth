@@ -687,3 +687,12 @@
 }
 .correccion-bien { -fx-background-color: #dcfce7; -fx-text-fill: -ew-verde-oscuro; }
 .correccion-mal { -fx-background-color: #fee2e2; -fx-text-fill: -ew-rojo; }
+
+/* ---------- Brokers ---------- */
+.aviso-rn06 {
+    -fx-background-color: #eff6ff;
+    -fx-border-color: #bfdbfe;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12 16;
+}

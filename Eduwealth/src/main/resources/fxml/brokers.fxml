@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- CU-09: Directorio de brokers regulados y derivación a la web oficial (RF-14, RF-15, RN-06) -->
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eduwealth.controller.BrokersController"
+            fitToWidth="true" styleClass="scroll-contenido">
+
+    <VBox styleClass="pagina">
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="4">
+                <Label text="Directorio de Brokers Regulados" styleClass="titulo"/>
+                <Label text="Compara plataformas oficiales y da el salto a la inversión real." styleClass="subtitulo"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="saldoCabecera" styleClass="chip-saldo"/>
+        </HBox>
+
+        <TextField fx:id="campoBusqueda" promptText="⌕   Buscar broker por nombre…"/>
+        <FlowPane fx:id="filtros" hgap="8" vgap="8"/>
+
+        <HBox styleClass="aviso-rn06" spacing="10" alignment="CENTER_LEFT">
+            <Label text="ⓘ" styleClass="consejo-icono"/>
+            <Label text="Aviso: EduWealth no procesa dinero ni datos bancarios reales. Al seleccionar un broker serás redirigido de forma segura a su sitio web oficial."
+                   styleClass="consejo-texto" wrapText="true"/>
+        </HBox>
+
+        <Label fx:id="avisoError" styleClass="mensaje-error" wrapText="true" visible="false" managed="false"/>
+
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Plataformas disponibles" styleClass="tarjeta-titulo"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="numeroBrokers" styleClass="nota"/>
+        </HBox>
+
+        <GridPane fx:id="rejillaBrokers" hgap="18" vgap="18"/>
+
+        <Label text="ⓘ Contenido educativo, no asesoramiento financiero. Invertir conlleva riesgos. Consulta las condiciones de cada broker."
+               styleClass="nota"/>
+    </VBox>
+</ScrollPane>

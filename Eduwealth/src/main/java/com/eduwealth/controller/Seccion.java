@@ -12,7 +12,7 @@ public enum Seccion {
             "Define límites de gasto por categoría y recibe alertas al 80 % y al 100 %."),
     EDUCACION("Educación", "educacion",
             "Lecciones por niveles con test de evaluación y medidor de preparación."),
-    BROKERS("Brokers", null,
+    BROKERS("Brokers", "brokers",
             "Compara brokers regulados y accede a su web oficial cuando estés preparado."),
     CONFIGURACION("Configuración", null,
             "Cambia tu moneda base, tu contraseña o reinicia el simulador.");

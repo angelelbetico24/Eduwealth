@@ -35,6 +35,7 @@ public final class FabricaServicios {
             new GestorTransaccionesJdbc(), DIVISAS);
     private static final MercadoService MERCADO =
             new MercadoService(new ActivoDAOJdbc(), new GestorTransaccionesJdbc(), new Random());
+    private static final BrokerService BROKERS = new BrokerService(new BrokerDAOJdbc());
     private static final PanelService PANEL = new PanelService(SIMULADOR, PRESUPUESTOS, EDUCACION,
             new BrokerDAOJdbc());
 
@@ -63,6 +64,10 @@ public final class FabricaServicios {
 
     public static MercadoService mercado() {
         return MERCADO;
+    }
+
+    public static BrokerService brokers() {
+        return BROKERS;
     }
 
     public static PanelService panel() {
