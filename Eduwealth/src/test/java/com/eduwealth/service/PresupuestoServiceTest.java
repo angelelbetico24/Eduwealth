@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,6 +28,7 @@ class PresupuestoServiceTest {
 
     private DaosEnMemoria.Gastos gastos;
     private DaosEnMemoria.Presupuestos presupuestos;
+    private DaosEnMemoria.Transacciones transacciones;
     private PresupuestoService servicio;
 
     @BeforeEach
@@ -33,7 +36,8 @@ class PresupuestoServiceTest {
         DaosEnMemoria.Categorias categorias = new DaosEnMemoria.Categorias().con(OCIO).con(TRANSPORTE);
         gastos = new DaosEnMemoria.Gastos();
         presupuestos = new DaosEnMemoria.Presupuestos(gastos, categorias);
-        servicio = new PresupuestoService(presupuestos, gastos, categorias);
+        transacciones = new DaosEnMemoria.Transacciones();
+        servicio = new PresupuestoService(presupuestos, gastos, categorias, transacciones);
         servicio.definirPresupuesto(USUARIO, OCIO, "500", NOVIEMBRE);
     }
 
@@ -140,6 +144,49 @@ class PresupuestoServiceTest {
 
         servicio.eliminarPresupuesto(USUARIO, OCIO.getIdCategoria(), NOVIEMBRE);
         assertTrue(presupuestos.todos.isEmpty());
+    }
+
+    @Test
+    void guardarLimitesAplicaTodosLosCambiosDelMes() {
+        CategoriaGasto vivienda = new CategoriaGasto(2, "Vivienda", null);
+        Map<CategoriaGasto, String> limites = new LinkedHashMap<>();
+        limites.put(OCIO, "");             // sin gastos: se elimina
+        limites.put(TRANSPORTE, "200,00"); // nuevo
+        limites.put(vivienda, "  ");       // no tenía presupuesto: no hace nada
+
+        int antes = transacciones.confirmadas;
+        servicio.guardarLimites(USUARIO, NOVIEMBRE, limites);
+
+        ResumenPresupuestos r = servicio.resumenDelMes(USUARIO, NOVIEMBRE);
+        assertEquals(1, r.categorias().size());
+        assertEquals("Transporte", r.categorias().get(0).categoria());
+        assertEquals(antes + 1, transacciones.confirmadas); // todos los cambios en una sola transacción
+    }
+
+    @Test
+    void noSeQuitaElLimiteDeUnaCategoriaConGastosYNoSeAplicaNada() {
+        servicio.registrarGasto(USUARIO, OCIO, "95", HOY, null, HOY);
+        Map<CategoriaGasto, String> limites = new LinkedHashMap<>();
+        limites.put(TRANSPORTE, "200");
+        limites.put(OCIO, "");
+
+        ValidacionException e = assertThrows(ValidacionException.class,
+                () -> servicio.guardarLimites(USUARIO, NOVIEMBRE, limites));
+
+        assertEquals("limite-" + OCIO.getIdCategoria(), e.getCampo());
+        assertTrue(e.getMessage().contains("ya tiene gastos"));
+        // Validación previa: tampoco se ha guardado Transporte
+        assertEquals(1, servicio.resumenDelMes(USUARIO, NOVIEMBRE).categorias().size());
+        assertThrows(ValidacionException.class,
+                () -> servicio.eliminarPresupuesto(USUARIO, OCIO.getIdCategoria(), NOVIEMBRE));
+    }
+
+    @Test
+    void unLimiteNoValidoIndicaSuCategoria() {
+        Map<CategoriaGasto, String> limites = new LinkedHashMap<>();
+        limites.put(TRANSPORTE, "-20");
+        assertEquals("limite-" + TRANSPORTE.getIdCategoria(), assertThrows(ValidacionException.class,
+                () -> servicio.guardarLimites(USUARIO, NOVIEMBRE, limites)).getCampo());
     }
 
     private String campoConError(String importe, LocalDate fecha, String concepto) {

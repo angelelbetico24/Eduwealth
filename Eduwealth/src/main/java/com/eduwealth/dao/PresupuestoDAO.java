@@ -15,8 +15,8 @@ public interface PresupuestoDAO {
      * Crea el presupuesto o, si ya existe uno para el mismo usuario, categoría y mes,
      * actualiza su límite (se apoya en la restricción UNIQUE de C-03).
      */
-    void guardar(Presupuesto presupuesto);
+    void guardar(Transaccion tx, Presupuesto presupuesto);
 
     /** Elimina el presupuesto de una categoría en un mes. Devuelve si existía. */
-    boolean eliminar(int idUsuario, int idCategoria, int mes, int anio);
+    boolean eliminar(Transaccion tx, int idUsuario, int idCategoria, int mes, int anio);
 }

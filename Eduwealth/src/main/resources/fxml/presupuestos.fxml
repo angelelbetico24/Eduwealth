@@ -64,8 +64,15 @@
         <HBox spacing="20">
             <!-- Límites por categoría -->
             <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                <Label text="Límites de Presupuesto por Categoría" styleClass="tarjeta-titulo"/>
-                <Label fx:id="subtituloCategorias" styleClass="nota"/>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <VBox spacing="2">
+                        <Label text="Límites de Presupuesto por Categoría" styleClass="tarjeta-titulo"/>
+                        <Label fx:id="subtituloCategorias" styleClass="nota"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="⚙  Gestionar límites" styleClass="boton-secundario" minWidth="-Infinity"
+                            onAction="#gestionarLimites"/>
+                </HBox>
                 <VBox fx:id="listaCategorias" spacing="6"/>
                 <Label text="ⓘ Las alertas se activan al alcanzar el 80 % de cada límite y al llegar al 100 %."
                        styleClass="nota"/>

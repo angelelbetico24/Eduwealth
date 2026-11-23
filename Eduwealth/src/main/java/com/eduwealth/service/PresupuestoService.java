@@ -2,7 +2,9 @@ package com.eduwealth.service;
 
 import com.eduwealth.dao.CategoriaGastoDAO;
 import com.eduwealth.dao.GastoDAO;
+import com.eduwealth.dao.GestorTransacciones;
 import com.eduwealth.dao.PresupuestoDAO;
+import com.eduwealth.dao.Transaccion;
 import com.eduwealth.model.CategoriaGasto;
 import com.eduwealth.model.EstadoPresupuesto;
 import com.eduwealth.model.Gasto;
@@ -14,8 +16,13 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Presupuestos y control de gastos: definir límites mensuales (CU-10), registrar gastos
@@ -33,11 +40,14 @@ public class PresupuestoService {
     private final PresupuestoDAO presupuestoDAO;
     private final GastoDAO gastoDAO;
     private final CategoriaGastoDAO categoriaDAO;
+    private final GestorTransacciones transacciones;
 
-    public PresupuestoService(PresupuestoDAO presupuestoDAO, GastoDAO gastoDAO, CategoriaGastoDAO categoriaDAO) {
+    public PresupuestoService(PresupuestoDAO presupuestoDAO, GastoDAO gastoDAO, CategoriaGastoDAO categoriaDAO,
+                              GestorTransacciones transacciones) {
         this.presupuestoDAO = presupuestoDAO;
         this.gastoDAO = gastoDAO;
         this.categoriaDAO = categoriaDAO;
+        this.transacciones = transacciones;
     }
 
     // ------------------------------------------------------------------ consultas
@@ -69,18 +79,81 @@ public class PresupuestoService {
         if (categoria == null) {
             throw new ValidacionException("categoria", "Selecciona una categoría.");
         }
+        validarMes(mes);
+        BigDecimal limite = validarImporte(importe, "limite");
+        try (Transaccion tx = transacciones.iniciar()) {
+            presupuestoDAO.guardar(tx, presupuesto(idUsuario, categoria.getIdCategoria(), limite, mes));
+            tx.confirmar();
+        }
+    }
+
+    /** Quita el límite de una categoría. No se permite si ya tiene gastos ese mes (C-27). */
+    public void eliminarPresupuesto(int idUsuario, int idCategoria, YearMonth mes) {
+        validarMes(mes);
+        resumenDelMes(idUsuario, mes).categorias().stream()
+                .filter(c -> c.idCategoria() == idCategoria)
+                .findFirst()
+                .ifPresent(this::comprobarQueSePuedeEliminar);
+        try (Transaccion tx = transacciones.iniciar()) {
+            if (!presupuestoDAO.eliminar(tx, idUsuario, idCategoria, mes.getMonthValue(), mes.getYear())) {
+                throw new ValidacionException("Ese presupuesto ya no existe.");
+            }
+            tx.confirmar();
+        }
+    }
+
+    /**
+     * Guarda de una vez los límites de todas las categorías de un mes (C-27). Un texto vacío
+     * significa «sin presupuesto». Primero se valida todo y después se aplica en una única
+     * transacción: o se guardan todos los cambios o ninguno.
+     * <p>
+     * Los errores indican el campo como {@code "limite-<idCategoria>"} para marcarlo en la interfaz.
+     */
+    public void guardarLimites(int idUsuario, YearMonth mes, Map<CategoriaGasto, String> limites) {
+        validarMes(mes);
+        Map<Integer, CategoriaPresupuesto> actuales = resumenDelMes(idUsuario, mes).categorias().stream()
+                .collect(Collectors.toMap(CategoriaPresupuesto::idCategoria, Function.identity()));
+
+        Map<Integer, BigDecimal> aGuardar = new LinkedHashMap<>();
+        List<Integer> aEliminar = new ArrayList<>();
+        for (Map.Entry<CategoriaGasto, String> entrada : limites.entrySet()) {
+            int idCategoria = entrada.getKey().getIdCategoria();
+            String texto = entrada.getValue();
+            if (texto == null || texto.isBlank()) {
+                CategoriaPresupuesto actual = actuales.get(idCategoria);
+                if (actual != null) {
+                    comprobarQueSePuedeEliminar(actual);
+                    aEliminar.add(idCategoria);
+                }
+            } else {
+                aGuardar.put(idCategoria, validarImporte(texto, "limite-" + idCategoria));
+            }
+        }
+
+        try (Transaccion tx = transacciones.iniciar()) {
+            aGuardar.forEach((idCategoria, limite) ->
+                    presupuestoDAO.guardar(tx, presupuesto(idUsuario, idCategoria, limite, mes)));
+            aEliminar.forEach(idCategoria ->
+                    presupuestoDAO.eliminar(tx, idUsuario, idCategoria, mes.getMonthValue(), mes.getYear()));
+            tx.confirmar();
+        }
+    }
+
+    private void comprobarQueSePuedeEliminar(CategoriaPresupuesto c) {
+        if (c.gastado().signum() > 0) {
+            throw new ValidacionException("limite-" + c.idCategoria(), c.categoria()
+                    + " ya tiene gastos este mes: ajusta su límite en lugar de eliminarlo.");
+        }
+    }
+
+    private static void validarMes(YearMonth mes) {
         if (mes == null) {
             throw new ValidacionException("mes", "Selecciona el mes del presupuesto.");
         }
-        BigDecimal limite = validarImporte(importe, "limite");
-        presupuestoDAO.guardar(new Presupuesto(0, idUsuario, categoria.getIdCategoria(), limite,
-                mes.getMonthValue(), mes.getYear()));
     }
 
-    public void eliminarPresupuesto(int idUsuario, int idCategoria, YearMonth mes) {
-        if (!presupuestoDAO.eliminar(idUsuario, idCategoria, mes.getMonthValue(), mes.getYear())) {
-            throw new ValidacionException("Ese presupuesto ya no existe.");
-        }
+    private static Presupuesto presupuesto(int idUsuario, int idCategoria, BigDecimal limite, YearMonth mes) {
+        return new Presupuesto(0, idUsuario, idCategoria, limite, mes.getMonthValue(), mes.getYear());
     }
 
     // ------------------------------------------------------------------ CU-11: registrar gasto

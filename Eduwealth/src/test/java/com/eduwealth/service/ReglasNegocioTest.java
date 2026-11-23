@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /** Reglas de negocio puras: RN-03 (umbrales), RN-04 (conversión) y RN-07 (preparación). */
 class ReglasNegocioTest {
 
-    private final PresupuestoService presupuestos = new PresupuestoService(null, null, null);
+    private final PresupuestoService presupuestos = new PresupuestoService(null, null, null, null);
     private final DivisaService divisas = new DivisaService(null);
     private final EducacionService educacion = new EducacionService(null, null);
 

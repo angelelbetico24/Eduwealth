@@ -28,6 +28,7 @@ Este apartado recoge **qué se cambia, por qué y cuál es la solución adoptada
 | C-24 | Regla de negocio | Cantidades fraccionarias, redondeo a céntimos e importe mínimo | RF-05, RF-06, CU-04, CU-05 |
 | C-25 | Arquitectura | Transacciones en la capa DAO sin acoplar los servicios a JDBC | 6.11, CU-04 (E-02), 6.9.5 |
 | C-26 | Requisito / Modelo de datos | Movimiento simulado del mercado por días transcurridos | 6.3, RF-07, CU-06, CU-12, 6.10 |
+| C-27 | Caso de uso | Gestión de los límites mensuales de presupuesto | RF-17, CU-10 |
 | C-12 | Regla de negocio | Nueva RN-07: fórmula del medidor de preparación | RF-13 |
 | C-13 | Regla de negocio | Nueva RN-08: desbloqueo de lecciones por nivel | 6.6, 6.13 |
 | C-14 | Requisito | Nuevo RF-19 / CU-13: reiniciar simulador | 6.4, 6.7, 6.13 |
@@ -146,6 +147,16 @@ CREATE TABLE preguntas (
   - Si dos usuarios inician sesión a la vez, los activos se leen bloqueados (`SELECT … FOR UPDATE`) dentro de una transacción (C-25), y el movimiento se aplica una sola vez.
   - **Modelo de datos:** nueva columna `activos.fecha_actualizacion DATETIME`. Las bases ya creadas se actualizan con `docs/modelo-datos/migraciones/001_C-26_fecha_actualizacion_activos.sql`, sin perder datos.
   - Las reglas RN-01, RN-02 y RN-04 no cambian: las órdenes siguen usando el `precio_actual` del catálogo (C-15).
+
+### C-27 · Gestión de los límites mensuales de presupuesto
+- **Problema:** CU-10 solo dice «permite establecer límites máximos de gasto por categoría para un periodo determinado». No explica cómo se modifican ni cómo se quitan, ni qué pasa con los gastos ya anotados si se elimina el límite de su categoría. Esto último choca con C-09, que exige un presupuesto para poder anotar gastos.
+- **Solución:**
+  - Desde la pantalla de presupuestos, la opción **«Gestionar límites»** muestra todas las categorías del mes seleccionado, cada una con un campo para su límite mensual. **Un campo vacío significa que esa categoría no tiene presupuesto.**
+  - **«Copiar mes anterior»** rellena los campos con los límites del mes previo. No se guarda nada hasta pulsar «Guardar límites».
+  - Se pueden definir límites del mes actual, de meses pasados (para registrar gastos atrasados) y de meses futuros (para planificar).
+  - **Se guarda todo de una vez:** primero se validan todos los campos y después se aplican los cambios en una única transacción (C-25). Si hay un error, se marca el campo de esa categoría y no se guarda nada.
+  - **No se puede eliminar el límite de una categoría que ya tiene gastos en ese mes**, porque sus gastos quedarían fuera del control de RN-03. En ese caso se pide ajustar el límite.
+  - Crear o ajustar un límite usa `INSERT … ON DUPLICATE KEY UPDATE` sobre la restricción única de C-03, así que nunca se duplican presupuestos del mismo mes.
 
 ---
 

@@ -249,14 +249,14 @@ final class DaosEnMemoria {
         }
 
         @Override
-        public void guardar(Presupuesto presupuesto) {
-            eliminar(presupuesto.getIdUsuario(), presupuesto.getIdCategoria(), presupuesto.getMes(),
+        public void guardar(Transaccion tx, Presupuesto presupuesto) {
+            eliminar(tx, presupuesto.getIdUsuario(), presupuesto.getIdCategoria(), presupuesto.getMes(),
                     presupuesto.getAnio());
             todos.add(presupuesto);
         }
 
         @Override
-        public boolean eliminar(int idUsuario, int idCategoria, int mes, int anio) {
+        public boolean eliminar(Transaccion tx, int idUsuario, int idCategoria, int mes, int anio) {
             return todos.removeIf(p -> p.getIdUsuario() == idUsuario && p.getIdCategoria() == idCategoria
                     && p.getMes() == mes && p.getAnio() == anio);
         }

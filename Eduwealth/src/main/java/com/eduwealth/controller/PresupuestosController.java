@@ -194,7 +194,12 @@ public class PresupuestosController {
                     + ". Fija un límite por categoría para recibir alertas al 80 % y al 100 %.");
             vacio.getStyleClass().add("nota");
             vacio.setWrapText(true);
-            listaCategorias.getChildren().add(vacio);
+            Button definir = new Button("+  Definir límites de " + PresupuestoService.nombreMes(r.mes()));
+            definir.getStyleClass().add("boton-suave");
+            definir.setOnAction(e -> gestionarLimites());
+            VBox caja = new VBox(12, vacio, definir);
+            caja.getStyleClass().add("caja-vacia");
+            listaCategorias.getChildren().add(caja);
             return;
         }
         for (CategoriaPresupuesto c : r.categorias()) {
@@ -295,13 +300,36 @@ public class PresupuestosController {
 
         String motivo = futuro ? "No se pueden anotar gastos de un mes futuro."
                 : r.vacio() ? "Para anotar gastos en " + PresupuestoService.nombreMes(r.mes())
-                + " necesitas definir antes algún presupuesto." : null;
+                + " define antes algún límite con «Gestionar límites»." : null;
         boolean habilitado = motivo == null;
         for (Node control : List.of(campoImporte, campoFecha, campoCategoria, campoConcepto, botonGuardar)) {
             control.setDisable(!habilitado);
         }
         if (!habilitado) {
             mostrarMensaje(motivo, "mensaje-aviso");
+        }
+    }
+
+    /** CU-10: abre la ventana para definir, ajustar o quitar los límites del mes seleccionado. */
+    @FXML
+    private void gestionarLimites() {
+        YearMonth mes = mes();
+        try {
+            DialogoLimites dialogo = new DialogoLimites(servicio, Sesion.getUsuario().getIdUsuario(), mes, simbolo);
+            List<CategoriaGasto> todas = categorias.values().stream()
+                    .sorted((a, b) -> a.getNombre().compareToIgnoreCase(b.getNombre()))
+                    .toList();
+            boolean guardado = dialogo.mostrar(tarjetaGasto.getScene().getWindow(),
+                    tarjetaGasto.getScene().getStylesheets(), todas,
+                    servicio.resumenDelMes(Sesion.getUsuario().getIdUsuario(), mes));
+            if (guardado) {
+                cargarMes(mes);
+                if (!campoImporte.isDisabled()) {
+                    mostrarMensaje("Límites de " + PresupuestoService.nombreMes(mes) + " guardados.", "mensaje-exito");
+                }
+            }
+        } catch (DataAccessException e) {
+            mostrarMensaje(e.getMessage(), "mensaje-error");
         }
     }
 

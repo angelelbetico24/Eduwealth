@@ -25,7 +25,7 @@ public final class FabricaServicios {
     private static final AutenticacionService AUTENTICACION = new AutenticacionService(new UsuarioDAOJdbc());
     private static final DivisaService DIVISAS = new DivisaService(new DivisaDAOJdbc());
     private static final PresupuestoService PRESUPUESTOS = new PresupuestoService(
-            new PresupuestoDAOJdbc(), new GastoDAOJdbc(), new CategoriaGastoDAOJdbc());
+            new PresupuestoDAOJdbc(), new GastoDAOJdbc(), new CategoriaGastoDAOJdbc(), new GestorTransaccionesJdbc());
     private static final EducacionService EDUCACION =
             new EducacionService(new LeccionDAOJdbc(), new ProgresoLeccionDAOJdbc());
     private static final SimuladorService SIMULADOR = new SimuladorService(new UsuarioDAOJdbc(),
