@@ -518,3 +518,51 @@
 /* Colores dentro de las tablas (más específicos que .tabla-datos .table-cell) */
 .tabla-datos .table-cell.texto-positivo, .tabla-datos .table-cell .texto-positivo { -fx-text-fill: -ew-verde-oscuro; }
 .tabla-datos .table-cell.texto-negativo, .tabla-datos .table-cell .texto-negativo { -fx-text-fill: -ew-rojo; }
+
+/* ---------- Presupuestos ---------- */
+.mensaje-aviso {
+    -fx-text-fill: #b45309;
+    -fx-font-size: 13px;
+    -fx-wrap-text: true;
+}
+
+.fila-categoria {
+    -fx-padding: 14 4 14 4;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+}
+
+.fila-categoria:hover { -fx-background-color: #f8fafc; -fx-background-radius: 8; }
+
+.categoria-importe { -fx-text-fill: -ew-texto; -fx-font-size: 20px; -fx-font-weight: bold; }
+.categoria-porcentaje-verde { -fx-text-fill: -ew-verde-oscuro; -fx-font-weight: bold; }
+.categoria-porcentaje-ambar { -fx-text-fill: #b45309; -fx-font-weight: bold; }
+.categoria-porcentaje-rojo { -fx-text-fill: -ew-rojo; -fx-font-weight: bold; }
+
+.fila-gasto {
+    -fx-padding: 10 4;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+}
+
+.gasto-importe { -fx-text-fill: -ew-texto; -fx-font-weight: bold; }
+
+.boton-icono {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94a3b8;
+    -fx-padding: 2 6;
+    -fx-cursor: hand;
+}
+
+.boton-icono:hover { -fx-text-fill: -ew-rojo; -fx-background-color: #fef2f2; -fx-background-radius: 6; }
+
+.date-picker > .text-field { -fx-border-color: transparent; -fx-background-color: transparent; -fx-padding: 0; -fx-pref-height: 22; }
+.date-picker {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: -ew-borde;
+    -fx-border-radius: 8;
+    -fx-padding: 4 4 4 12;
+    -fx-pref-height: 40;
+}
+.date-picker:focused { -fx-border-color: -ew-primario; }
+.date-picker.campo-error { -fx-border-color: -ew-rojo; -fx-background-color: #fef2f2; }
+.date-picker > .arrow-button { -fx-background-color: transparent; }

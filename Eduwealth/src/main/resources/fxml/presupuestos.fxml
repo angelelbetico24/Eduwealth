@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Presupuestos y Control de Gastos: CU-10 (límites) y CU-11 (registrar gasto y evaluar umbral, RN-03) -->
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eduwealth.controller.PresupuestosController"
+            fitToWidth="true" styleClass="scroll-contenido">
+
+    <VBox styleClass="pagina">
+
+        <!-- Cabecera -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="4">
+                <Label text="Mi planificación  /  Presupuestos y gastos" styleClass="nota"/>
+                <Label text="Presupuestos y Control de Gastos" styleClass="titulo"/>
+                <Label text="Cada gasto cuenta. Mantén tus objetivos bajo control." styleClass="subtitulo"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <VBox spacing="8" alignment="CENTER_RIGHT">
+                <Button text="+  Registrar Nuevo Gasto" styleClass="boton-primario" minWidth="-Infinity"
+                        onAction="#enfocarFormulario"/>
+                <HBox spacing="6" alignment="CENTER_RIGHT">
+                    <Button text="‹" styleClass="boton-secundario" onAction="#mesAnterior"/>
+                    <ComboBox fx:id="selectorMes" prefWidth="190"/>
+                    <Button text="›" styleClass="boton-secundario" onAction="#mesSiguiente"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <Label fx:id="avisoError" styleClass="mensaje-error" visible="false" managed="false"/>
+
+        <!-- Resumen del mes -->
+        <HBox spacing="20">
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Presupuesto Total Mensual" styleClass="tarjeta-etiqueta"/>
+                <Label fx:id="totalLimite" styleClass="cifra"/>
+                <Label fx:id="numeroCategorias" styleClass="nota"/>
+            </VBox>
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Gasto Acumulado" styleClass="tarjeta-etiqueta"/>
+                <Label fx:id="totalGastado" styleClass="cifra"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <ProgressBar fx:id="barraTotal" HBox.hgrow="ALWAYS" maxWidth="Infinity" styleClass="barra"/>
+                    <Label fx:id="porcentajeTotal" styleClass="nota"/>
+                </HBox>
+            </VBox>
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Disponible" styleClass="tarjeta-etiqueta"/>
+                <Label fx:id="totalDisponible" styleClass="cifra"/>
+                <Label fx:id="disponibleNota" styleClass="nota"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="20">
+            <!-- Límites por categoría -->
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                <Label text="Límites de Presupuesto por Categoría" styleClass="tarjeta-titulo"/>
+                <Label fx:id="subtituloCategorias" styleClass="nota"/>
+                <VBox fx:id="listaCategorias" spacing="6"/>
+                <Label text="ⓘ Las alertas se activan al alcanzar el 80 % de cada límite y al llegar al 100 %."
+                       styleClass="nota"/>
+            </VBox>
+
+            <!-- Formulario y últimos gastos -->
+            <VBox spacing="20" prefWidth="380" minWidth="340" maxWidth="400">
+                <VBox fx:id="tarjetaGasto" styleClass="tarjeta-panel">
+                    <Label text="Añadir Gasto" styleClass="tarjeta-titulo"/>
+                    <Label text="Un pequeño registro, un mayor control." styleClass="nota"/>
+
+                    <HBox spacing="10">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Importe" styleClass="etiqueta-campo"/>
+                            <TextField fx:id="campoImporte" promptText="0,00"/>
+                        </VBox>
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Fecha" styleClass="etiqueta-campo"/>
+                            <DatePicker fx:id="campoFecha" maxWidth="Infinity"/>
+                        </VBox>
+                    </HBox>
+
+                    <Label text="Categoría" styleClass="etiqueta-campo"/>
+                    <ComboBox fx:id="campoCategoria" promptText="Selecciona una categoría" maxWidth="Infinity"/>
+
+                    <Label text="Concepto (opcional)" styleClass="etiqueta-campo"/>
+                    <TextField fx:id="campoConcepto" promptText="Ej.: comida con amigos"/>
+
+                    <Label fx:id="mensajeGasto" styleClass="mensaje-error" wrapText="true" visible="false" managed="false"/>
+
+                    <Button fx:id="botonGuardar" text="+  Guardar Gasto" styleClass="boton-primario" maxWidth="Infinity"
+                            defaultButton="true" onAction="#guardarGasto"/>
+                </VBox>
+
+                <VBox styleClass="tarjeta-panel">
+                    <Label text="Últimos Gastos Registrados" styleClass="tarjeta-titulo"/>
+                    <VBox fx:id="listaGastos" spacing="2"/>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <Label text="ⓘ Los gastos se anotan en tu divisa base. EduWealth no accede a tus cuentas bancarias."
+               styleClass="nota"/>
+    </VBox>
+</ScrollPane>

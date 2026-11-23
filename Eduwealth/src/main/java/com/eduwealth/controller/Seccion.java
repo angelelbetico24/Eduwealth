@@ -8,7 +8,7 @@ public enum Seccion {
             "Resumen de tu patrimonio, presupuestos y progreso."),
     SIMULADOR("Simulador", "simulador",
             "Compra y vende activos con dinero virtual y sigue la rentabilidad de tu cartera."),
-    PRESUPUESTOS("Presupuestos", null,
+    PRESUPUESTOS("Presupuestos", "presupuestos",
             "Define límites de gasto por categoría y recibe alertas al 80 % y al 100 %."),
     EDUCACION("Educación", null,
             "Lecciones por niveles con test de evaluación y medidor de preparación."),
