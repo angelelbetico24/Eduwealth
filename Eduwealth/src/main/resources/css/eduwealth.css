@@ -652,3 +652,38 @@
 }
 .consejo-icono { -fx-text-fill: -ew-primario; -fx-font-size: 14px; }
 .consejo-texto { -fx-text-fill: #1e40af; -fx-font-size: 13px; }
+
+/* ---------- Lección y test ---------- */
+.tarjeta-lectura { -fx-padding: 28 30; }
+.parrafo-leccion { -fx-line-spacing: 4; }
+.texto-leccion { -fx-fill: #334155; -fx-font-size: 15px; }
+.concepto-leccion { -fx-fill: -ew-texto; -fx-font-size: 15px; -fx-font-weight: bold; }
+
+.tarjeta-pregunta {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: -ew-borde;
+    -fx-border-radius: 12;
+    -fx-padding: 16 18;
+}
+.pregunta-enunciado { -fx-text-fill: -ew-texto; -fx-font-size: 15px; -fx-font-weight: bold; }
+.opcion-test { -fx-text-fill: #334155; -fx-font-size: 14px; -fx-padding: 4 0; -fx-cursor: hand; }
+.opcion-test:selected { -fx-text-fill: -ew-primario; -fx-font-weight: bold; }
+
+.tarjeta-resultado { -fx-padding: 22 24; }
+.resultado-aprobado { -fx-background-color: #f0fdf4; -fx-border-color: #bbf7d0; }
+.resultado-suspenso { -fx-background-color: #fffbeb; -fx-border-color: #fde68a; }
+.resultado-nota { -fx-font-size: 40px; -fx-font-weight: bold; -fx-text-fill: -ew-texto; }
+.resultado-aprobado .resultado-nota { -fx-text-fill: -ew-verde-oscuro; }
+.resultado-suspenso .resultado-nota { -fx-text-fill: #b45309; }
+.aviso-desbloqueo { -fx-text-fill: -ew-primario; -fx-font-weight: bold; -fx-font-size: 14px; }
+
+.correccion-bien, .correccion-mal {
+    -fx-min-width: 26;
+    -fx-min-height: 26;
+    -fx-alignment: center;
+    -fx-background-radius: 999;
+    -fx-font-weight: bold;
+}
+.correccion-bien { -fx-background-color: #dcfce7; -fx-text-fill: -ew-verde-oscuro; }
+.correccion-mal { -fx-background-color: #fee2e2; -fx-text-fill: -ew-rojo; }

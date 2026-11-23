@@ -1,6 +1,7 @@
 package com.eduwealth.controller;
 
 import com.eduwealth.dao.DataAccessException;
+import com.eduwealth.model.Leccion;
 import com.eduwealth.model.Usuario;
 import com.eduwealth.service.FabricaServicios;
 import com.eduwealth.util.Navegador;
@@ -95,6 +96,8 @@ public class MainController {
             Navegador.Vista<Object> vista = Navegador.cargar(seccion.getVista());
             if (vista.controlador() instanceof InicioController inicio) {
                 inicio.setNavegacion(this::mostrar);
+            } else if (vista.controlador() instanceof EducacionController educacion) {
+                educacion.setAbrirLeccion(this::mostrarLeccion);
             }
             contenido.getChildren().setAll(vista.raiz());
         } else {
@@ -102,6 +105,13 @@ public class MainController {
             vista.controlador().mostrar(seccion);
             contenido.getChildren().setAll(vista.raiz());
         }
+    }
+
+    /** CU-08: abre una lección dentro del área de contenido; al volver se recarga la ruta de aprendizaje. */
+    private void mostrarLeccion(Leccion leccion) {
+        Navegador.Vista<LeccionController> vista = Navegador.cargar("leccion");
+        vista.controlador().mostrar(leccion, () -> mostrar(Seccion.EDUCACION));
+        contenido.getChildren().setAll(vista.raiz());
     }
 
     @FXML
