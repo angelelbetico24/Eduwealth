@@ -10,7 +10,7 @@ public enum Seccion {
             "Compra y vende activos con dinero virtual y sigue la rentabilidad de tu cartera."),
     PRESUPUESTOS("Presupuestos", "presupuestos",
             "Define límites de gasto por categoría y recibe alertas al 80 % y al 100 %."),
-    EDUCACION("Educación", null,
+    EDUCACION("Educación", "educacion",
             "Lecciones por niveles con test de evaluación y medidor de preparación."),
     BROKERS("Brokers", null,
             "Compara brokers regulados y accede a su web oficial cuando estés preparado."),

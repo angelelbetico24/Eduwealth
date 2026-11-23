@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Módulo de Educación Financiera: medidor de preparación (RN-07) y ruta de aprendizaje (RN-08) -->
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eduwealth.controller.EducacionController"
+            fitToWidth="true" styleClass="scroll-contenido">
+
+    <VBox styleClass="pagina">
+
+        <!-- Cabecera -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="4">
+                <Label text="Módulo de Educación Financiera" styleClass="titulo"/>
+                <Label text="Aprende a invertir paso a paso y mide tu preparación." styleClass="subtitulo"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="saldoCabecera" styleClass="chip-saldo"/>
+        </HBox>
+
+        <Label fx:id="avisoError" styleClass="mensaje-error" wrapText="true" visible="false" managed="false"/>
+
+        <!-- Medidor de preparación -->
+        <VBox styleClass="tarjeta-panel" spacing="14">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Tu Medidor de Preparación para Inversión Real" styleClass="tarjeta-titulo"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="◔  Tu progreso de aprendizaje" styleClass="nota-azul"/>
+            </HBox>
+            <HBox spacing="28" alignment="CENTER_LEFT">
+                <StackPane fx:id="anillo" minWidth="120" minHeight="120" maxWidth="120" maxHeight="120"/>
+                <VBox spacing="10" HBox.hgrow="ALWAYS">
+                    <Label fx:id="tituloMedidor" styleClass="medidor-titulo"/>
+                    <ProgressBar fx:id="barraMedidor" maxWidth="Infinity" styleClass="barra, barra-azul"/>
+                    <Label fx:id="estadoMedidor" styleClass="texto-positivo"/>
+                    <Label fx:id="objetivoMedidor" styleClass="nota" wrapText="true"/>
+                </VBox>
+                <VBox spacing="12" minWidth="230">
+                    <HBox styleClass="dato-medidor" spacing="12" alignment="CENTER_LEFT">
+                        <Label text="▤" styleClass="dato-icono"/>
+                        <Label fx:id="leccionesSuperadas" styleClass="dato-valor"/>
+                        <Label text="Lecciones superadas" styleClass="nota"/>
+                    </HBox>
+                    <HBox styleClass="dato-medidor" spacing="12" alignment="CENTER_LEFT">
+                        <Label text="★" styleClass="dato-icono"/>
+                        <Label text="Nota media" styleClass="nota"/>
+                        <Label fx:id="notaMedia" styleClass="dato-valor"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- Ruta de aprendizaje -->
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Tu ruta de aprendizaje" styleClass="tarjeta-titulo"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label text="Avanza a tu ritmo, de la teoría a la práctica" styleClass="nota"/>
+        </HBox>
+        <HBox alignment="CENTER_LEFT" spacing="8">
+            <fx:define>
+                <ToggleGroup fx:id="grupoNivel"/>
+            </fx:define>
+            <ToggleButton fx:id="filtroTodos" text="Todos los niveles" toggleGroup="$grupoNivel" selected="true"
+                          styleClass="filtro-nivel"/>
+            <ToggleButton fx:id="filtroPrincipiante" text="Principiante" toggleGroup="$grupoNivel" styleClass="filtro-nivel"/>
+            <ToggleButton fx:id="filtroIntermedio" text="Intermedio" toggleGroup="$grupoNivel" styleClass="filtro-nivel"/>
+            <ToggleButton fx:id="filtroAvanzado" text="Avanzado" toggleGroup="$grupoNivel" styleClass="filtro-nivel"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="numeroLecciones" styleClass="nota"/>
+        </HBox>
+
+        <GridPane fx:id="rejillaLecciones" hgap="18" vgap="18"/>
+
+        <Label fx:id="mensajeLeccion" styleClass="mensaje-aviso" wrapText="true" visible="false" managed="false"/>
+
+        <HBox styleClass="consejo" spacing="10" alignment="CENTER_LEFT">
+            <Label text="✦" styleClass="consejo-icono"/>
+            <Label text="Cada lección cuenta: supera el test de todas las lecciones de tu nivel para desbloquear el siguiente."
+                   styleClass="consejo-texto" wrapText="true"/>
+        </HBox>
+        <Label text="ⓘ Contenido educativo, no asesoramiento financiero. Invertir conlleva riesgos." styleClass="nota"/>
+    </VBox>
+</ScrollPane>

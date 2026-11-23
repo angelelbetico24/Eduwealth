@@ -575,3 +575,80 @@
 
 .dialogo-limites { -fx-padding: 8; }
 .dialogo-limites .button-bar { -fx-padding: 12 0 0 0; }
+
+/* ---------- Educación ---------- */
+.nota-azul { -fx-text-fill: -ew-primario; -fx-font-size: 12px; }
+
+.anillo-fondo { -fx-fill: transparent; -fx-stroke: #e2e8f0; -fx-stroke-width: 10; }
+.anillo-arco { -fx-fill: transparent; -fx-stroke: -ew-primario; -fx-stroke-width: 10; }
+.anillo-valor { -fx-text-fill: -ew-texto; -fx-font-size: 24px; -fx-font-weight: bold; }
+
+.medidor-titulo { -fx-text-fill: -ew-texto; -fx-font-size: 18px; -fx-font-weight: bold; }
+
+.dato-medidor {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 10;
+    -fx-padding: 12 14;
+}
+.dato-icono { -fx-text-fill: -ew-primario; -fx-font-size: 16px; }
+.dato-valor { -fx-text-fill: -ew-texto; -fx-font-size: 20px; -fx-font-weight: bold; }
+
+.filtro-nivel {
+    -fx-background-color: white;
+    -fx-text-fill: -ew-texto-suave;
+    -fx-border-color: -ew-borde;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 7 14;
+    -fx-cursor: hand;
+}
+.filtro-nivel:selected {
+    -fx-background-color: -ew-primario;
+    -fx-text-fill: white;
+    -fx-border-color: -ew-primario;
+    -fx-font-weight: bold;
+}
+
+.tarjeta-leccion {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: -ew-borde;
+    -fx-border-radius: 14;
+    -fx-padding: 18;
+}
+.tarjeta-leccion-siguiente { -fx-border-color: -ew-primario; -fx-border-width: 2; }
+.tarjeta-leccion-bloqueada { -fx-background-color: #fbfcfe; }
+.tarjeta-leccion-bloqueada .leccion-titulo { -fx-text-fill: #64748b; }
+
+.leccion-icono {
+    -fx-min-width: 38;
+    -fx-min-height: 38;
+    -fx-alignment: center;
+    -fx-background-radius: 10;
+    -fx-font-size: 15px;
+}
+.leccion-icono-principiante { -fx-background-color: #dcfce7; -fx-text-fill: -ew-verde-oscuro; }
+.leccion-icono-intermedio { -fx-background-color: #dbeafe; -fx-text-fill: -ew-primario; }
+.leccion-icono-avanzado { -fx-background-color: #f1f5f9; -fx-text-fill: -ew-texto-suave; }
+
+.leccion-titulo { -fx-text-fill: -ew-texto; -fx-font-size: 16px; -fx-font-weight: bold; }
+
+.estado-superada { -fx-text-fill: -ew-verde-oscuro; -fx-font-weight: bold; -fx-font-size: 13px; }
+.estado-disponible { -fx-text-fill: -ew-primario; -fx-font-weight: bold; -fx-font-size: 13px; }
+.estado-bloqueada { -fx-text-fill: -ew-texto-suave; -fx-font-size: 13px; }
+
+.boton-bloqueado {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #94a3b8;
+    -fx-background-radius: 8;
+    -fx-pref-height: 40;
+}
+.boton-bloqueado:disabled { -fx-opacity: 1; }
+
+.consejo {
+    -fx-background-color: #eff6ff;
+    -fx-background-radius: 10;
+    -fx-padding: 12 16;
+}
+.consejo-icono { -fx-text-fill: -ew-primario; -fx-font-size: 14px; }
+.consejo-texto { -fx-text-fill: #1e40af; -fx-font-size: 13px; }
