@@ -64,11 +64,13 @@ Las operaciones que tocan varias tablas (compra, venta, reinicio, test) deben ir
 
 ## Estado actual (actualizar al avanzar)
 
-Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · **Simulador completo** (CU-03…CU-07: catálogo con búsqueda/filtros, compra RN-01, venta RN-02 con P&L realizado, cartera, historial, cotización en vivo) · transacciones (`Transaccion`/`GestorTransacciones`, C-25) · mercado simulado (C-26, `MercadoService`) · `SimuladorService`, `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-07 parcial), `PanelService` · 27 tests unitarios (todos pasan; DAO falsos compartidos en `src/test/.../DaosEnMemoria.java`).
+Hecho: estructura Maven/VS Code · script SQL v1.1 con datos · 12 entidades · registro y login (CU-01, CU-02) · menú lateral + Panel Principal con datos reales · **Simulador completo** (CU-03…CU-07: catálogo con búsqueda/filtros, compra RN-01, venta RN-02 con P&L realizado, cartera, historial, cotización en vivo) · transacciones (`Transaccion`/`GestorTransacciones`, C-25) · mercado simulado (C-26, `MercadoService`) · `SimuladorService`, `DivisaService` (RN-04), `PresupuestoService` (RN-03), `EducacionService` (RN-07 parcial), `PanelService` · 37 tests unitarios (todos pasan; DAO falsos compartidos en `src/test/.../DaosEnMemoria.java`).
 
 El usuario demo tiene ya operaciones reales hechas en las pruebas (6 AAPL, saldo 8.921,65 €). Reejecutar el script SQL lo deja como al principio.
 
-Pendiente, en este orden: 1) **Presupuestos y gastos** (CU-10, CU-11: definir límite mensual, registrar gasto, estados RN-03, vista con barras por categoría) · 2) Educación (lecciones, test RN-05, RN-08, mejor nota) · 3) Directorio de brokers con filtros y enlace externo con aviso (RN-06, CU-09) · 4) Configuración (cambio de divisa/contraseña RF-03, reiniciar simulador RF-19) · 5) Panel de administración (CU-12, incluye botón «Simular un día de mercado» → `MercadoService.simularUnDia`) · 6) README (descripción, tecnologías, instrucciones) · 7) refactorizaciones, optimizaciones, registro de IA y documento v2.
+**Presupuestos — paso 1 hecho**: DAO (`PresupuestoDAO.guardar` con upsert, `GastoDAO`, `CategoriaGastoDAO`) y `PresupuestoService` (definir/eliminar presupuesto, registrar/eliminar gasto con validaciones y estado antes/después, `resumenDelMes`); el Panel Principal ya usa `resumenDelMes`. 37 tests.
+
+Pendiente, en este orden: 1) **Presupuestos y gastos — pasos 2-4** (pantalla del prototipo con tarjetas, barras por categoría, «Añadir gasto», últimos gastos y selector de mes; formulario para definir límites CU-10; prueba en la app) · 2) Educación (lecciones, test RN-05, RN-08, mejor nota) · 3) Directorio de brokers con filtros y enlace externo con aviso (RN-06, CU-09) · 4) Configuración (cambio de divisa/contraseña RF-03, reiniciar simulador RF-19) · 5) Panel de administración (CU-12, incluye botón «Simular un día de mercado» → `MercadoService.simularUnDia`) · 6) README (descripción, tecnologías, instrucciones) · 7) refactorizaciones, optimizaciones, registro de IA y documento v2.
 
 Pruebas de UI: script de ayuda en el scratchpad (`ui.ps1`: foco, clic relativo a la ventana, teclas con SendKeys, captura, cerrar). Si no existe, recrearlo con `user32` (`SetForegroundWindow`, `SetCursorPos`, `mouse_event`) y `System.Drawing`.
 
@@ -81,7 +83,7 @@ Pruebas de UI: script de ayuda en el scratchpad (`ui.ps1`: foco, clic relativo a
 
 Candidatas ya detectadas (dejar el «antes» en un commit propio para que el historial lo muestre; no corregirlas antes de documentarlas):
 - Refactor: código repetido `buscarUno` / listados en todos los `*DAOJdbc` → clase base con mapeador de filas · los controladores/Fábrica instancian DAO concretos.
-- Optimización: `ConexionBD` abre una conexión nueva por consulta (sin pool) · cargas repetidas de divisas/activos (ya se cargan una vez en `PanelService`; hay que medir y documentar) · resumen de presupuestos con una sola consulta (`LEFT JOIN` + `SUM`) frente a una por categoría.
+- Optimización: `ConexionBD` abre una conexión nueva por consulta (sin pool) · cargas repetidas de divisas/activos (ya se cargan una vez en `PanelService`; hay que medir y documentar) · resumen de presupuestos con una sola consulta (`LEFT JOIN` + `SUM`) frente a una por categoría · `PresupuestoDAOJdbc.SQL_RESUMEN_MES` filtra con `MONTH(g.fecha)`/`YEAR(g.fecha)`, que impide usar el índice `idx_gastos_usuario_fecha` → cambiar a rango `fecha >= inicio AND fecha < inicio+1 mes` (como ya hace `GastoDAOJdbc.listarDelMes`); comprobar con `EXPLAIN`.
 
 ## Forma de trabajar
 

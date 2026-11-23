@@ -2,7 +2,9 @@ package com.eduwealth.service;
 
 import com.eduwealth.dao.jdbc.ActivoDAOJdbc;
 import com.eduwealth.dao.jdbc.BrokerDAOJdbc;
+import com.eduwealth.dao.jdbc.CategoriaGastoDAOJdbc;
 import com.eduwealth.dao.jdbc.DivisaDAOJdbc;
+import com.eduwealth.dao.jdbc.GastoDAOJdbc;
 import com.eduwealth.dao.jdbc.GestorTransaccionesJdbc;
 import com.eduwealth.dao.jdbc.LeccionDAOJdbc;
 import com.eduwealth.dao.jdbc.OperacionSimuladaDAOJdbc;
@@ -22,7 +24,8 @@ public final class FabricaServicios {
 
     private static final AutenticacionService AUTENTICACION = new AutenticacionService(new UsuarioDAOJdbc());
     private static final DivisaService DIVISAS = new DivisaService(new DivisaDAOJdbc());
-    private static final PresupuestoService PRESUPUESTOS = new PresupuestoService(new PresupuestoDAOJdbc());
+    private static final PresupuestoService PRESUPUESTOS = new PresupuestoService(
+            new PresupuestoDAOJdbc(), new GastoDAOJdbc(), new CategoriaGastoDAOJdbc());
     private static final EducacionService EDUCACION =
             new EducacionService(new LeccionDAOJdbc(), new ProgresoLeccionDAOJdbc());
     private static final SimuladorService SIMULADOR = new SimuladorService(new UsuarioDAOJdbc(),

@@ -2,6 +2,7 @@ package com.eduwealth.dao.jdbc;
 
 import com.eduwealth.dao.DataAccessException;
 import com.eduwealth.dao.PresupuestoDAO;
+import com.eduwealth.model.Presupuesto;
 import com.eduwealth.model.ResumenCategoria;
 import com.eduwealth.util.ConexionBD;
 
@@ -50,6 +51,39 @@ public class PresupuestoDAOJdbc implements PresupuestoDAO {
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error al consultar los presupuestos.", e);
+        }
+    }
+
+    @Override
+    public void guardar(Presupuesto presupuesto) {
+        // Una sola sentencia atómica: inserta o, si ya existe el UNIQUE (usuario, categoría, mes, año), actualiza
+        String sql = "INSERT INTO presupuestos (id_usuario, id_categoria, monto_limite, mes, anio) "
+                + "VALUES (?, ?, ?, ?, ?) AS nuevo ON DUPLICATE KEY UPDATE monto_limite = nuevo.monto_limite";
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, presupuesto.getIdUsuario());
+            ps.setInt(2, presupuesto.getIdCategoria());
+            ps.setBigDecimal(3, presupuesto.getMontoLimite());
+            ps.setInt(4, presupuesto.getMes());
+            ps.setInt(5, presupuesto.getAnio());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al guardar el presupuesto.", e);
+        }
+    }
+
+    @Override
+    public boolean eliminar(int idUsuario, int idCategoria, int mes, int anio) {
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(
+                     "DELETE FROM presupuestos WHERE id_usuario = ? AND id_categoria = ? AND mes = ? AND anio = ?")) {
+            ps.setInt(1, idUsuario);
+            ps.setInt(2, idCategoria);
+            ps.setInt(3, mes);
+            ps.setInt(4, anio);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al eliminar el presupuesto.", e);
         }
     }
 }

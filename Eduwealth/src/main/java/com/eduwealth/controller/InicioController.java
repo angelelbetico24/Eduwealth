@@ -5,10 +5,12 @@ import com.eduwealth.model.Broker;
 import com.eduwealth.model.EstadoPresupuesto;
 import com.eduwealth.model.Usuario;
 import com.eduwealth.service.AutenticacionService;
+import com.eduwealth.service.CategoriaPresupuesto;
 import com.eduwealth.service.FabricaServicios;
 import com.eduwealth.service.PosicionDetalle;
 import com.eduwealth.service.ResumenCartera;
 import com.eduwealth.service.ResumenPanel;
+import com.eduwealth.service.ResumenPresupuestos;
 import com.eduwealth.util.Formato;
 import com.eduwealth.util.Sesion;
 import javafx.fxml.FXML;
@@ -118,7 +120,7 @@ public class InicioController {
         capitalInicial.setText("Sobre " + dinero(AutenticacionService.SALDO_INICIAL) + " iniciales");
     }
 
-    private void mostrarPresupuesto(ResumenPanel.Presupuestos p) {
+    private void mostrarPresupuesto(ResumenPresupuestos p) {
         if (p.estado() == null) {
             gastoMes.setText("—");
             limiteMes.setText("");
@@ -195,7 +197,10 @@ public class InicioController {
 
     private void mostrarNovedades(ResumenPanel r) {
         novedades.getChildren().clear();
-        for (ResumenPanel.Aviso aviso : r.presupuestos().avisos()) {
+        for (CategoriaPresupuesto aviso : r.presupuestos().categorias()) {
+            if (aviso.estado() == EstadoPresupuesto.DENTRO_LIMITE) {
+                continue;
+            }
             String estilo = estiloEstado(aviso.estado());
             novedades.getChildren().add(novedad(estilo, aviso.estado() == EstadoPresupuesto.EXCEDIDO ? "✖" : "⚠",
                     (aviso.estado() == EstadoPresupuesto.EXCEDIDO ? "Presupuesto excedido: " : "Alerta de presupuesto: ")

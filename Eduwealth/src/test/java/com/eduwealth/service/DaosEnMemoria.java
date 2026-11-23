@@ -1,16 +1,23 @@
 package com.eduwealth.service;
 
 import com.eduwealth.dao.ActivoDAO;
+import com.eduwealth.dao.CategoriaGastoDAO;
 import com.eduwealth.dao.DivisaDAO;
+import com.eduwealth.dao.GastoDAO;
 import com.eduwealth.dao.GestorTransacciones;
 import com.eduwealth.dao.OperacionSimuladaDAO;
 import com.eduwealth.dao.PosicionCarteraDAO;
+import com.eduwealth.dao.PresupuestoDAO;
 import com.eduwealth.dao.Transaccion;
 import com.eduwealth.dao.UsuarioDAO;
 import com.eduwealth.model.Activo;
+import com.eduwealth.model.CategoriaGasto;
 import com.eduwealth.model.Divisa;
+import com.eduwealth.model.Gasto;
 import com.eduwealth.model.OperacionSimulada;
 import com.eduwealth.model.PosicionCartera;
+import com.eduwealth.model.Presupuesto;
+import com.eduwealth.model.ResumenCategoria;
 import com.eduwealth.model.Usuario;
 
 import java.math.BigDecimal;
@@ -176,6 +183,87 @@ final class DaosEnMemoria {
         public void insertar(Transaccion tx, OperacionSimulada operacion) {
             operacion.setIdOperacion(todas.size() + 1);
             todas.add(operacion);
+        }
+    }
+
+    static final class Categorias implements CategoriaGastoDAO {
+        final List<CategoriaGasto> todas = new ArrayList<>();
+
+        Categorias con(CategoriaGasto c) {
+            todas.add(c);
+            return this;
+        }
+
+        @Override
+        public List<CategoriaGasto> listarTodas() {
+            return new ArrayList<>(todas);
+        }
+    }
+
+    static final class Gastos implements GastoDAO {
+        final List<Gasto> todos = new ArrayList<>();
+        private int siguienteId = 1;
+
+        @Override
+        public int insertar(Gasto gasto) {
+            gasto.setIdGasto(siguienteId++);
+            todos.add(gasto);
+            return gasto.getIdGasto();
+        }
+
+        @Override
+        public List<Gasto> listarDelMes(int idUsuario, int mes, int anio) {
+            return todos.stream()
+                    .filter(g -> g.getIdUsuario() == idUsuario && g.getFecha().getMonthValue() == mes
+                            && g.getFecha().getYear() == anio)
+                    .toList();
+        }
+
+        @Override
+        public boolean eliminar(int idGasto, int idUsuario) {
+            return todos.removeIf(g -> g.getIdGasto() == idGasto && g.getIdUsuario() == idUsuario);
+        }
+    }
+
+    /** Calcula el resumen del mes a partir de los gastos en memoria, como hace la consulta SQL. */
+    static final class Presupuestos implements PresupuestoDAO {
+        final List<Presupuesto> todos = new ArrayList<>();
+        private final Gastos gastos;
+        private final Categorias categorias;
+
+        Presupuestos(Gastos gastos, Categorias categorias) {
+            this.gastos = gastos;
+            this.categorias = categorias;
+        }
+
+        @Override
+        public List<ResumenCategoria> listarResumenMes(int idUsuario, int mes, int anio) {
+            return todos.stream()
+                    .filter(p -> p.getIdUsuario() == idUsuario && p.getMes() == mes && p.getAnio() == anio)
+                    .map(p -> new ResumenCategoria(p.getIdCategoria(), nombre(p.getIdCategoria()), p.getMontoLimite(),
+                            gastos.listarDelMes(idUsuario, mes, anio).stream()
+                                    .filter(g -> g.getIdCategoria() == p.getIdCategoria())
+                                    .map(Gasto::getMonto)
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add)))
+                    .toList();
+        }
+
+        @Override
+        public void guardar(Presupuesto presupuesto) {
+            eliminar(presupuesto.getIdUsuario(), presupuesto.getIdCategoria(), presupuesto.getMes(),
+                    presupuesto.getAnio());
+            todos.add(presupuesto);
+        }
+
+        @Override
+        public boolean eliminar(int idUsuario, int idCategoria, int mes, int anio) {
+            return todos.removeIf(p -> p.getIdUsuario() == idUsuario && p.getIdCategoria() == idCategoria
+                    && p.getMes() == mes && p.getAnio() == anio);
+        }
+
+        private String nombre(int idCategoria) {
+            return categorias.todas.stream().filter(c -> c.getIdCategoria() == idCategoria)
+                    .map(CategoriaGasto::getNombre).findFirst().orElse("?");
         }
     }
 
