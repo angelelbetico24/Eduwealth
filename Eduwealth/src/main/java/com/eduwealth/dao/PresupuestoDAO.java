@@ -1,5 +1,6 @@
 package com.eduwealth.dao;
 
+import java.math.BigDecimal;
 import com.eduwealth.model.Presupuesto;
 import com.eduwealth.model.ResumenCategoria;
 
@@ -19,4 +20,7 @@ public interface PresupuestoDAO {
 
     /** Elimina el presupuesto de una categoría en un mes. Devuelve si existía. */
     boolean eliminar(Transaccion tx, int idUsuario, int idCategoria, int mes, int anio);
+
+    /** Multiplica todos los límites del usuario por {@code factor} (cambio de divisa base, C-28). */
+    void convertirImportes(Transaccion tx, int idUsuario, BigDecimal factor);
 }

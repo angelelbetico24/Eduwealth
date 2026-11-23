@@ -1,5 +1,6 @@
 package com.eduwealth.dao;
 
+import java.math.BigDecimal;
 import com.eduwealth.model.Gasto;
 
 import java.util.List;
@@ -15,4 +16,7 @@ public interface GastoDAO {
 
     /** Elimina un gasto del usuario. Devuelve si existía (no se pueden borrar gastos de otro usuario). */
     boolean eliminar(int idGasto, int idUsuario);
+
+    /** Multiplica todos los gastos del usuario por {@code factor} (cambio de divisa base, C-28). */
+    void convertirImportes(Transaccion tx, int idUsuario, BigDecimal factor);
 }

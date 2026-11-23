@@ -21,8 +21,8 @@ import java.util.Optional;
 public class UsuarioDAOJdbc implements UsuarioDAO {
 
     private static final String SELECT_BASE =
-            "SELECT id_usuario, nombre, email, password_hash, rol, saldo_ficticio, id_divisa_base, fecha_registro "
-                    + "FROM usuarios";
+            "SELECT id_usuario, nombre, email, password_hash, rol, saldo_ficticio, capital_inicial, id_divisa_base, "
+                    + "fecha_registro FROM usuarios";
 
     @Override
     public Optional<Usuario> buscarPorId(int idUsuario) {
@@ -49,8 +49,8 @@ public class UsuarioDAOJdbc implements UsuarioDAO {
 
     @Override
     public int insertar(Usuario usuario) {
-        String sql = "INSERT INTO usuarios (nombre, email, password_hash, rol, saldo_ficticio, id_divisa_base) "
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (nombre, email, password_hash, rol, saldo_ficticio, capital_inicial, "
+                + "id_divisa_base) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, usuario.getNombre());
@@ -58,7 +58,8 @@ public class UsuarioDAOJdbc implements UsuarioDAO {
             ps.setString(3, usuario.getPasswordHash());
             ps.setString(4, usuario.getRol().name());
             ps.setBigDecimal(5, usuario.getSaldoFicticio());
-            ps.setInt(6, usuario.getIdDivisaBase());
+            ps.setBigDecimal(6, usuario.getCapitalInicial());
+            ps.setInt(7, usuario.getIdDivisaBase());
             ps.executeUpdate();
             try (ResultSet claves = ps.getGeneratedKeys()) {
                 if (!claves.next()) {
@@ -114,6 +115,45 @@ public class UsuarioDAOJdbc implements UsuarioDAO {
         }
     }
 
+    @Override
+    public void actualizarNombre(int idUsuario, String nombre) {
+        ejecutarActualizacion("UPDATE usuarios SET nombre = ? WHERE id_usuario = ?", nombre, idUsuario,
+                "Error al guardar el nombre.");
+    }
+
+    @Override
+    public void actualizarPassword(int idUsuario, String passwordHash) {
+        ejecutarActualizacion("UPDATE usuarios SET password_hash = ? WHERE id_usuario = ?", passwordHash, idUsuario,
+                "Error al cambiar la contraseña.");
+    }
+
+    @Override
+    public void actualizarCuenta(Transaccion tx, int idUsuario, int idDivisaBase, BigDecimal saldo,
+                                 BigDecimal capitalInicial) {
+        Connection con = TransaccionJdbc.conexion(tx);
+        try (PreparedStatement ps = con.prepareStatement("UPDATE usuarios SET id_divisa_base = ?, saldo_ficticio = ?, "
+                + "capital_inicial = ? WHERE id_usuario = ?")) {
+            ps.setInt(1, idDivisaBase);
+            ps.setBigDecimal(2, saldo);
+            ps.setBigDecimal(3, capitalInicial);
+            ps.setInt(4, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al actualizar la cuenta del simulador.", e);
+        }
+    }
+
+    private void ejecutarActualizacion(String sql, String valor, int idUsuario, String mensajeError) {
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, valor);
+            ps.setInt(2, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(mensajeError, e);
+        }
+    }
+
     private Usuario mapear(ResultSet rs) throws SQLException {
         Timestamp registro = rs.getTimestamp("fecha_registro");
         return new Usuario(
@@ -123,6 +163,7 @@ public class UsuarioDAOJdbc implements UsuarioDAO {
                 rs.getString("password_hash"),
                 Rol.valueOf(rs.getString("rol")),
                 rs.getBigDecimal("saldo_ficticio"),
+                rs.getBigDecimal("capital_inicial"),
                 rs.getInt("id_divisa_base"),
                 registro != null ? registro.toLocalDateTime() : null);
     }

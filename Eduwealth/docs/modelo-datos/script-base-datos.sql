@@ -8,6 +8,7 @@
 --   C-03 UNIQUE en presupuestos      C-04 operaciones_simuladas.pnl_realizado
 --   C-08 divisas.fecha_actualizacion C-22 campos de filtrado en brokers
 --   C-26 activos.fecha_actualizacion (movimiento simulado del mercado)
+--   C-28 usuarios.capital_inicial (rentabilidad correcta al cambiar de divisa base)
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS eduwealth_db
@@ -50,7 +51,7 @@ CREATE TABLE divisas (
 
 -- ------------------------------------------------------------
 -- 2. TABLA: usuarios
--- saldo_ficticio se expresa en la divisa base del usuario (C-07)
+-- saldo_ficticio y capital_inicial se expresan en la divisa base del usuario (C-07, C-28)
 -- ------------------------------------------------------------
 CREATE TABLE usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -59,9 +60,11 @@ CREATE TABLE usuarios (
     password_hash VARCHAR(255) NOT NULL,
     rol ENUM('USUARIO', 'ADMIN') NOT NULL DEFAULT 'USUARIO',
     saldo_ficticio DECIMAL(15,2) NOT NULL DEFAULT 10000.00,
+    capital_inicial DECIMAL(15,2) NOT NULL DEFAULT 10000.00,
     id_divisa_base INT NOT NULL,
     fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_usuario_saldo CHECK (saldo_ficticio >= 0),
+    CONSTRAINT chk_usuario_capital CHECK (capital_inicial > 0),
     FOREIGN KEY (id_divisa_base) REFERENCES divisas(id_divisa) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 

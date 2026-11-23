@@ -2,9 +2,11 @@ package com.eduwealth.dao.jdbc;
 
 import com.eduwealth.dao.DataAccessException;
 import com.eduwealth.dao.GastoDAO;
+import com.eduwealth.dao.Transaccion;
 import com.eduwealth.model.Gasto;
 import com.eduwealth.util.ConexionBD;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -78,6 +80,20 @@ public class GastoDAOJdbc implements GastoDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DataAccessException("Error al eliminar el gasto.", e);
+        }
+    }
+
+    @Override
+    public void convertirImportes(Transaccion tx, int idUsuario, BigDecimal factor) {
+        // Mínimo 0,01: un importe muy pequeño no debe redondearse a 0 (lo impediría el CHECK > 0)
+        Connection con = TransaccionJdbc.conexion(tx);
+        try (PreparedStatement ps = con.prepareStatement(
+                "UPDATE gastos SET monto = GREATEST(ROUND(monto * ?, 2), 0.01) WHERE id_usuario = ?")) {
+            ps.setBigDecimal(1, factor);
+            ps.setInt(2, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al convertir los importes a la nueva divisa.", e);
         }
     }
 }

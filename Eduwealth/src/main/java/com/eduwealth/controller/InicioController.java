@@ -4,7 +4,6 @@ import com.eduwealth.dao.DataAccessException;
 import com.eduwealth.model.Broker;
 import com.eduwealth.model.EstadoPresupuesto;
 import com.eduwealth.model.Usuario;
-import com.eduwealth.service.AutenticacionService;
 import com.eduwealth.service.CategoriaPresupuesto;
 import com.eduwealth.service.FabricaServicios;
 import com.eduwealth.service.PosicionDetalle;
@@ -118,7 +117,7 @@ public class InicioController {
                 "chip-positivo", "chip-negativo", "chip-gris");
         rentabilidad.setText((positiva ? "+" : "") + dinero(r.rentabilidad()) + " de rentabilidad");
         cambiarEstilo(rentabilidad, positiva ? "texto-positivo" : "texto-negativo", "texto-positivo", "texto-negativo");
-        capitalInicial.setText("Sobre " + dinero(AutenticacionService.SALDO_INICIAL) + " iniciales");
+        capitalInicial.setText("Sobre " + dinero(r.capitalInicial()) + " iniciales");
     }
 
     private void mostrarPresupuesto(ResumenPresupuestos p) {

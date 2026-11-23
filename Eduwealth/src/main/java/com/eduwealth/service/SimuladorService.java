@@ -113,12 +113,13 @@ public class SimuladorService {
         pnlTotal = aCentimos(pnlTotal);
         BigDecimal saldo = usuario.getSaldoFicticio();
         BigDecimal patrimonio = saldo.add(valorCartera);
-        BigDecimal capitalInicial = AutenticacionService.SALDO_INICIAL;
+        // Capital inicial guardado en la divisa base: la rentabilidad es correcta aunque se cambie de divisa (C-28)
+        BigDecimal capitalInicial = usuario.getCapitalInicial();
         BigDecimal rentabilidad = patrimonio.subtract(capitalInicial);
         BigDecimal rentabilidadPct = rentabilidad.multiply(BigDecimal.valueOf(100))
                 .divide(capitalInicial, 2, RoundingMode.HALF_UP);
-        return new ResumenCartera(base, saldo, valorCartera, pnlTotal, patrimonio, rentabilidad, rentabilidadPct,
-                posiciones, desactualizadas);
+        return new ResumenCartera(base, saldo, valorCartera, pnlTotal, patrimonio, capitalInicial, rentabilidad,
+                rentabilidadPct, posiciones, desactualizadas);
     }
 
     /** CU-07: historial del usuario, de la operación más reciente a la más antigua. */

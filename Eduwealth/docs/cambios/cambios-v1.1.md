@@ -29,6 +29,7 @@ Este apartado recoge **qué se cambia, por qué y cuál es la solución adoptada
 | C-25 | Arquitectura | Transacciones en la capa DAO sin acoplar los servicios a JDBC | 6.11, CU-04 (E-02), 6.9.5 |
 | C-26 | Requisito / Modelo de datos | Movimiento simulado del mercado por días transcurridos | 6.3, RF-07, CU-06, CU-12, 6.10 |
 | C-27 | Caso de uso | Gestión de los límites mensuales de presupuesto | RF-17, CU-10 |
+| C-28 | Regla de negocio / Modelo de datos | Cambio de divisa base completo y capital inicial por usuario | RF-03, RN-04, C-07, 6.10 |
 | C-12 | Regla de negocio | Nueva RN-07: fórmula del medidor de preparación | RF-13 |
 | C-13 | Regla de negocio | Nueva RN-08: desbloqueo de lecciones por nivel | 6.6, 6.13 |
 | C-14 | Requisito | Nuevo RF-19 / CU-13: reiniciar simulador | 6.4, 6.7, 6.13 |
@@ -157,6 +158,18 @@ CREATE TABLE preguntas (
   - **Se guarda todo de una vez:** primero se validan todos los campos y después se aplican los cambios en una única transacción (C-25). Si hay un error, se marca el campo de esa categoría y no se guarda nada.
   - **No se puede eliminar el límite de una categoría que ya tiene gastos en ese mes**, porque sus gastos quedarían fuera del control de RN-03. En ese caso se pide ajustar el límite.
   - Crear o ajustar un límite usa `INSERT … ON DUPLICATE KEY UPDATE` sobre la restricción única de C-03, así que nunca se duplican presupuestos del mismo mes.
+
+### C-28 · Cambio de divisa base completo y capital inicial por usuario
+- **Problema:** C-07 establece que, al cambiar la divisa base (RF-03), se convierte el saldo ficticio. Pero quedaban otros importes guardados en la divisa antigua:
+  - Los **límites de presupuesto** y los **gastos** se seguirían leyendo como si estuvieran en la divisa nueva. Por ejemplo, 500 € pasarían a mostrarse como 500 $.
+  - La **rentabilidad** del simulador se calculaba contra la constante 10.000. Al pasar de EUR a USD, el saldo de 10.000 € se convierte en 10.850 $ y aparecía una ganancia falsa del 8,5 %.
+- **Solución:**
+  - Al cambiar de divisa, en **una única transacción** (C-25) se convierten al tipo de cambio actual (RN-04): el saldo, el **capital inicial**, todos los **límites de presupuesto** y todos los **gastos** del usuario. Ningún importe convertido baja de 0,01, para respetar los `CHECK` de C-23.
+  - Las posiciones y el historial no cambian, porque están en la divisa de cada activo.
+  - **Modelo de datos:** nueva columna `usuarios.capital_inicial DECIMAL(15,2)`, que vale 10.000 al registrarse. La rentabilidad se calcula como patrimonio − capital inicial, así que es correcta en cualquier divisa.
+  - Las bases ya creadas se actualizan con `docs/modelo-datos/migraciones/002_C-28_capital_inicial_usuarios.sql`, sin pérdida de datos.
+  - **Reinicio del simulador (RF-19, C-14):** restablece el saldo y el capital inicial a 10.000 en la divisa base actual, y borra posiciones e historial en la misma transacción.
+  - Antes de aplicar el cambio de divisa, la pantalla pide confirmación indicando el tipo de cambio.
 
 ---
 

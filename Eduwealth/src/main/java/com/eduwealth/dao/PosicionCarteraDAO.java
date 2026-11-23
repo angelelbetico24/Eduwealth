@@ -18,4 +18,7 @@ public interface PosicionCarteraDAO {
     void actualizar(Transaccion tx, PosicionCartera posicion);
 
     void eliminar(Transaccion tx, int idPosicion);
+
+    /** Vacía la cartera del usuario (reinicio del simulador, RF-19). */
+    void eliminarTodas(Transaccion tx, int idUsuario);
 }

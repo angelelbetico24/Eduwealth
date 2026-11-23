@@ -696,3 +696,23 @@
     -fx-background-radius: 10;
     -fx-padding: 12 16;
 }
+
+/* ---------- Configuración ---------- */
+.campo-solo-lectura, .campo-solo-lectura:focused {
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: -ew-texto-suave;
+    -fx-border-color: -ew-borde;
+}
+
+.boton-aviso {
+    -fx-background-color: #fffbeb;
+    -fx-text-fill: #b45309;
+    -fx-border-color: #f59e0b;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-pref-height: 40;
+    -fx-padding: 0 16;
+    -fx-cursor: hand;
+}
+.boton-aviso:hover { -fx-background-color: #fef3c7; }

@@ -10,7 +10,8 @@ import java.util.List;
  * cada posición, en la divisa de su activo.
  */
 public record ResumenCartera(Divisa divisaBase, BigDecimal saldoDisponible, BigDecimal valorCartera,
-                             BigDecimal pnlNoRealizado, BigDecimal patrimonioTotal, BigDecimal rentabilidad,
+                             BigDecimal pnlNoRealizado, BigDecimal patrimonioTotal, BigDecimal capitalInicial,
+                             BigDecimal rentabilidad,
                              BigDecimal rentabilidadPorcentaje, List<PosicionDetalle> posiciones,
                              boolean tiposCambioDesactualizados) {
 }

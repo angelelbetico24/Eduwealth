@@ -85,4 +85,15 @@ public class OperacionSimuladaDAOJdbc implements OperacionSimuladaDAO {
             throw new DataAccessException("Error al registrar la operación en el historial.", e);
         }
     }
+
+    @Override
+    public void eliminarTodas(Transaccion tx, int idUsuario) {
+        Connection con = TransaccionJdbc.conexion(tx);
+        try (PreparedStatement ps = con.prepareStatement("DELETE FROM operaciones_simuladas WHERE id_usuario = ?")) {
+            ps.setInt(1, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al borrar el historial de operaciones.", e);
+        }
+    }
 }

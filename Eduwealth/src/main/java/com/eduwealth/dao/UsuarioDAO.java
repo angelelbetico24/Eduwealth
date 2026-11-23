@@ -24,4 +24,11 @@ public interface UsuarioDAO {
     Optional<Usuario> bloquearPorId(Transaccion tx, int idUsuario);
 
     void actualizarSaldo(Transaccion tx, int idUsuario, BigDecimal saldo);
+
+    void actualizarNombre(int idUsuario, String nombre);
+
+    void actualizarPassword(int idUsuario, String passwordHash);
+
+    /** Divisa base, saldo y capital inicial a la vez (cambio de divisa C-28 y reinicio del simulador RF-19). */
+    void actualizarCuenta(Transaccion tx, int idUsuario, int idDivisaBase, BigDecimal saldo, BigDecimal capitalInicial);
 }

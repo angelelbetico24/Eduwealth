@@ -106,4 +106,15 @@ public class PosicionCarteraDAOJdbc implements PosicionCarteraDAO {
                 rs.getBigDecimal("cantidad_titulos"),
                 rs.getBigDecimal("precio_medio_compra"));
     }
+
+    @Override
+    public void eliminarTodas(Transaccion tx, int idUsuario) {
+        Connection con = TransaccionJdbc.conexion(tx);
+        try (PreparedStatement ps = con.prepareStatement("DELETE FROM posiciones_cartera WHERE id_usuario = ?")) {
+            ps.setInt(1, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al vaciar la cartera.", e);
+        }
+    }
 }

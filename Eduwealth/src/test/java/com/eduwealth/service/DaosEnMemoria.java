@@ -27,6 +27,7 @@ import com.eduwealth.model.ResumenCategoria;
 import com.eduwealth.model.Usuario;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -77,6 +78,25 @@ final class DaosEnMemoria {
         @Override
         public void actualizarSaldo(Transaccion tx, int idUsuario, BigDecimal saldo) {
             porId.get(idUsuario).setSaldoFicticio(saldo);
+        }
+
+        @Override
+        public void actualizarNombre(int idUsuario, String nombre) {
+            porId.get(idUsuario).setNombre(nombre);
+        }
+
+        @Override
+        public void actualizarPassword(int idUsuario, String passwordHash) {
+            porId.get(idUsuario).setPasswordHash(passwordHash);
+        }
+
+        @Override
+        public void actualizarCuenta(Transaccion tx, int idUsuario, int idDivisaBase, BigDecimal saldo,
+                                     BigDecimal capitalInicial) {
+            Usuario u = porId.get(idUsuario);
+            u.setIdDivisaBase(idDivisaBase);
+            u.setSaldoFicticio(saldo);
+            u.setCapitalInicial(capitalInicial);
         }
     }
 
@@ -171,6 +191,11 @@ final class DaosEnMemoria {
         public void eliminar(Transaccion tx, int idPosicion) {
             porId.remove(idPosicion);
         }
+
+        @Override
+        public void eliminarTodas(Transaccion tx, int idUsuario) {
+            porId.values().removeIf(p -> p.getIdUsuario() == idUsuario);
+        }
     }
 
     static final class Operaciones implements OperacionSimuladaDAO {
@@ -190,6 +215,11 @@ final class DaosEnMemoria {
         public void insertar(Transaccion tx, OperacionSimulada operacion) {
             operacion.setIdOperacion(todas.size() + 1);
             todas.add(operacion);
+        }
+
+        @Override
+        public void eliminarTodas(Transaccion tx, int idUsuario) {
+            todas.removeIf(o -> o.getIdUsuario() == idUsuario);
         }
     }
 
@@ -230,6 +260,12 @@ final class DaosEnMemoria {
         public boolean eliminar(int idGasto, int idUsuario) {
             return todos.removeIf(g -> g.getIdGasto() == idGasto && g.getIdUsuario() == idUsuario);
         }
+
+        @Override
+        public void convertirImportes(Transaccion tx, int idUsuario, BigDecimal factor) {
+            todos.stream().filter(g -> g.getIdUsuario() == idUsuario)
+                    .forEach(g -> g.setMonto(convertido(g.getMonto(), factor)));
+        }
     }
 
     /** Calcula el resumen del mes a partir de los gastos en memoria, como hace la consulta SQL. */
@@ -266,6 +302,12 @@ final class DaosEnMemoria {
         public boolean eliminar(Transaccion tx, int idUsuario, int idCategoria, int mes, int anio) {
             return todos.removeIf(p -> p.getIdUsuario() == idUsuario && p.getIdCategoria() == idCategoria
                     && p.getMes() == mes && p.getAnio() == anio);
+        }
+
+        @Override
+        public void convertirImportes(Transaccion tx, int idUsuario, BigDecimal factor) {
+            todos.stream().filter(p -> p.getIdUsuario() == idUsuario)
+                    .forEach(p -> p.setMontoLimite(convertido(p.getMontoLimite(), factor)));
         }
 
         private String nombre(int idCategoria) {
@@ -339,6 +381,11 @@ final class DaosEnMemoria {
             todos.removeIf(p -> p.getIdProgreso() == progreso.getIdProgreso());
             todos.add(progreso);
         }
+    }
+
+    /** Igual que la SQL: GREATEST(ROUND(importe × factor, 2), 0.01). */
+    static BigDecimal convertido(BigDecimal importe, BigDecimal factor) {
+        return importe.multiply(factor).setScale(2, RoundingMode.HALF_UP).max(new BigDecimal("0.01"));
     }
 
     /** Cuenta las transacciones confirmadas y las cerradas sin confirmar (rollback). */

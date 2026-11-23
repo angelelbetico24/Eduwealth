@@ -49,6 +49,7 @@ public class AutenticacionService {
         usuario.setPasswordHash(BCrypt.hashpw(password, BCrypt.gensalt()));
         usuario.setRol(Rol.USUARIO);
         usuario.setSaldoFicticio(SALDO_INICIAL);
+        usuario.setCapitalInicial(SALDO_INICIAL);
         usuario.setIdDivisaBase(divisaBase.getIdDivisa());
         try {
             usuarioDAO.insertar(usuario);

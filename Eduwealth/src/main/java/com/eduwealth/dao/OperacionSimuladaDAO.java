@@ -13,4 +13,7 @@ public interface OperacionSimuladaDAO {
     List<OperacionSimulada> listarPorUsuario(int idUsuario);
 
     void insertar(Transaccion tx, OperacionSimulada operacion);
+
+    /** Borra el historial del usuario (reinicio del simulador, RF-19). */
+    void eliminarTodas(Transaccion tx, int idUsuario);
 }

@@ -60,6 +60,13 @@ public class MainController {
                 Seccion.BROKERS, navBrokers,
                 Seccion.CONFIGURACION, navConfiguracion));
 
+        refrescarUsuario();
+        actualizarMercado();
+        mostrar(Seccion.INICIO);
+    }
+
+    /** Nombre, iniciales, tipo de cuenta y divisa base del menú lateral (se refresca tras editar el perfil). */
+    private void refrescarUsuario() {
         Usuario usuario = Sesion.getUsuario();
         nombreUsuario.setText(usuario.getNombre());
         tipoCuenta.setText(usuario.esAdmin() ? "Administrador" : "Cuenta de aprendizaje");
@@ -70,9 +77,6 @@ public class MainController {
         } catch (DataAccessException e) {
             divisaBase.setText("");
         }
-
-        actualizarMercado();
-        mostrar(Seccion.INICIO);
     }
 
     /**
@@ -98,6 +102,8 @@ public class MainController {
                 inicio.setNavegacion(this::mostrar);
             } else if (vista.controlador() instanceof EducacionController educacion) {
                 educacion.setAbrirLeccion(this::mostrarLeccion);
+            } else if (vista.controlador() instanceof ConfiguracionController configuracion) {
+                configuracion.setAlCambiarPerfil(this::refrescarUsuario);
             }
             contenido.getChildren().setAll(vista.raiz());
         } else {

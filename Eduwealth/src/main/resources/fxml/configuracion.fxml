@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Configuración y preferencias del perfil: RF-03 (perfil, divisa, contraseña) y RF-19 / CU-13 (reiniciar simulador) -->
+<ScrollPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.eduwealth.controller.ConfiguracionController"
+            fitToWidth="true" styleClass="scroll-contenido">
+
+    <VBox styleClass="pagina">
+
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="4">
+                <Label text="Configuración y Preferencias del Perfil" styleClass="titulo"/>
+                <Label text="Gestiona tus datos personales, contraseña y divisa base de referencia." styleClass="subtitulo"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="saldoCabecera" styleClass="chip-saldo"/>
+        </HBox>
+
+        <HBox spacing="20">
+            <!-- Perfil -->
+            <VBox styleClass="tarjeta-panel" HBox.hgrow="ALWAYS" maxWidth="Infinity" spacing="12">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="◉" styleClass="dato-icono"/>
+                    <VBox>
+                        <Label text="Perfil de Usuario" styleClass="tarjeta-titulo"/>
+                        <Label text="Actualiza tus datos personales y la moneda principal de referencia." styleClass="nota"/>
+                    </VBox>
+                </HBox>
+
+                <Label text="Nombre completo" styleClass="etiqueta-campo"/>
+                <TextField fx:id="campoNombre"/>
+
+                <Label text="Correo electrónico" styleClass="etiqueta-campo"/>
+                <TextField fx:id="campoEmail" editable="false" styleClass="campo-solo-lectura"/>
+
+                <Label text="Moneda principal de referencia (divisa base)" styleClass="etiqueta-campo"/>
+                <ComboBox fx:id="comboDivisa" maxWidth="Infinity"/>
+                <Label fx:id="notaDivisa" styleClass="nota" wrapText="true"/>
+
+                <Label fx:id="mensajePerfil" styleClass="mensaje-error" wrapText="true" visible="false" managed="false"/>
+                <HBox>
+                    <Button text="Guardar cambios del perfil" styleClass="boton-primario" onAction="#guardarPerfil"/>
+                </HBox>
+            </VBox>
+
+            <VBox spacing="20" prefWidth="420" minWidth="360" maxWidth="440">
+                <!-- Seguridad -->
+                <VBox styleClass="tarjeta-panel" spacing="12">
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="⚿" styleClass="dato-icono"/>
+                        <VBox>
+                            <Label text="Seguridad y Credenciales" styleClass="tarjeta-titulo"/>
+                            <Label text="Actualiza tu contraseña y mantén tu cuenta protegida." styleClass="nota"/>
+                        </VBox>
+                    </HBox>
+                    <Label text="Contraseña actual" styleClass="etiqueta-campo"/>
+                    <PasswordField fx:id="campoActual"/>
+                    <Label text="Nueva contraseña" styleClass="etiqueta-campo"/>
+                    <PasswordField fx:id="campoNueva" promptText="Mínimo 8 caracteres"/>
+                    <Label text="Confirmar nueva contraseña" styleClass="etiqueta-campo"/>
+                    <PasswordField fx:id="campoConfirmacion"/>
+                    <Label fx:id="mensajePassword" styleClass="mensaje-error" wrapText="true" visible="false" managed="false"/>
+                    <HBox>
+                        <Button text="Actualizar contraseña" styleClass="boton-secundario" onAction="#cambiarPassword"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Simulador -->
+                <VBox styleClass="tarjeta-panel" spacing="12">
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="↻" styleClass="dato-icono"/>
+                        <VBox>
+                            <Label text="Ajustes del Simulador" styleClass="tarjeta-titulo"/>
+                            <Label text="Gestiona el saldo virtual de tu cuenta de aprendizaje." styleClass="nota"/>
+                        </VBox>
+                    </HBox>
+                    <Label text="Empieza de cero: se borran tu cartera y tu historial de operaciones. Tu progreso educativo y tus presupuestos se conservan."
+                           styleClass="nota" wrapText="true"/>
+                    <Label fx:id="mensajeSimulador" styleClass="mensaje-exito" wrapText="true" visible="false" managed="false"/>
+                    <HBox>
+                        <Button fx:id="botonReiniciar" styleClass="boton-aviso" onAction="#reiniciarSimulador"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</ScrollPane>

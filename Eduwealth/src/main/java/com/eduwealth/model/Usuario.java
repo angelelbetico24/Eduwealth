@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * Usuario de la aplicación. El saldo ficticio se expresa en su divisa base (C-07).
+ * Usuario de la aplicación. El saldo ficticio y el capital inicial se expresan en su divisa base
+ * (C-07, C-28): el capital inicial es la referencia para calcular la rentabilidad del simulador.
  */
 public class Usuario {
 
@@ -14,6 +15,7 @@ public class Usuario {
     private String passwordHash;
     private Rol rol;
     private BigDecimal saldoFicticio;
+    private BigDecimal capitalInicial;
     private int idDivisaBase;
     private LocalDateTime fechaRegistro;
 
@@ -28,8 +30,16 @@ public class Usuario {
         this.passwordHash = passwordHash;
         this.rol = rol;
         this.saldoFicticio = saldoFicticio;
+        this.capitalInicial = saldoFicticio;
         this.idDivisaBase = idDivisaBase;
         this.fechaRegistro = fechaRegistro;
+    }
+
+    public Usuario(int idUsuario, String nombre, String email, String passwordHash, Rol rol,
+                   BigDecimal saldoFicticio, BigDecimal capitalInicial, int idDivisaBase,
+                   LocalDateTime fechaRegistro) {
+        this(idUsuario, nombre, email, passwordHash, rol, saldoFicticio, idDivisaBase, fechaRegistro);
+        this.capitalInicial = capitalInicial;
     }
 
     public boolean esAdmin() {
@@ -82,6 +92,14 @@ public class Usuario {
 
     public void setSaldoFicticio(BigDecimal saldoFicticio) {
         this.saldoFicticio = saldoFicticio;
+    }
+
+    public BigDecimal getCapitalInicial() {
+        return capitalInicial;
+    }
+
+    public void setCapitalInicial(BigDecimal capitalInicial) {
+        this.capitalInicial = capitalInicial;
     }
 
     public int getIdDivisaBase() {

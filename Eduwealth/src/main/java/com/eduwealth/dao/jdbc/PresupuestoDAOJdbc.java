@@ -7,6 +7,7 @@ import com.eduwealth.model.Presupuesto;
 import com.eduwealth.model.ResumenCategoria;
 import com.eduwealth.util.ConexionBD;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -85,6 +86,20 @@ public class PresupuestoDAOJdbc implements PresupuestoDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DataAccessException("Error al eliminar el presupuesto.", e);
+        }
+    }
+
+    @Override
+    public void convertirImportes(Transaccion tx, int idUsuario, BigDecimal factor) {
+        // Mínimo 0,01: un importe muy pequeño no debe redondearse a 0 (lo impediría el CHECK > 0)
+        Connection con = TransaccionJdbc.conexion(tx);
+        try (PreparedStatement ps = con.prepareStatement(
+                "UPDATE presupuestos SET monto_limite = GREATEST(ROUND(monto_limite * ?, 2), 0.01) WHERE id_usuario = ?")) {
+            ps.setBigDecimal(1, factor);
+            ps.setInt(2, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException("Error al convertir los importes a la nueva divisa.", e);
         }
     }
 }
