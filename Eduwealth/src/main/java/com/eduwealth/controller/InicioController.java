@@ -9,6 +9,7 @@ import com.eduwealth.service.CategoriaPresupuesto;
 import com.eduwealth.service.FabricaServicios;
 import com.eduwealth.service.PosicionDetalle;
 import com.eduwealth.service.ResumenCartera;
+import com.eduwealth.service.ResumenEducacion;
 import com.eduwealth.service.ResumenPanel;
 import com.eduwealth.service.ResumenPresupuestos;
 import com.eduwealth.util.Formato;
@@ -143,7 +144,7 @@ public class InicioController {
                 : "Excedido en " + dinero(restante.negate()));
     }
 
-    private void mostrarPreparacion(ResumenPanel.Educacion e) {
+    private void mostrarPreparacion(ResumenEducacion e) {
         preparacion.setText(e.preparacion() + " %");
         estadoPreparacion.setText(e.listo() ? "Listo" : "En formación");
         cambiarEstilo(estadoPreparacion, e.listo() ? "chip-verde" : "chip-gris", "chip-verde", "chip-gris");

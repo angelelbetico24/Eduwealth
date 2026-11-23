@@ -5,24 +5,31 @@ import com.eduwealth.dao.CategoriaGastoDAO;
 import com.eduwealth.dao.DivisaDAO;
 import com.eduwealth.dao.GastoDAO;
 import com.eduwealth.dao.GestorTransacciones;
+import com.eduwealth.dao.LeccionDAO;
 import com.eduwealth.dao.OperacionSimuladaDAO;
 import com.eduwealth.dao.PosicionCarteraDAO;
+import com.eduwealth.dao.PreguntaDAO;
 import com.eduwealth.dao.PresupuestoDAO;
+import com.eduwealth.dao.ProgresoLeccionDAO;
 import com.eduwealth.dao.Transaccion;
 import com.eduwealth.dao.UsuarioDAO;
 import com.eduwealth.model.Activo;
 import com.eduwealth.model.CategoriaGasto;
 import com.eduwealth.model.Divisa;
 import com.eduwealth.model.Gasto;
+import com.eduwealth.model.Leccion;
 import com.eduwealth.model.OperacionSimulada;
 import com.eduwealth.model.PosicionCartera;
+import com.eduwealth.model.Pregunta;
 import com.eduwealth.model.Presupuesto;
+import com.eduwealth.model.ProgresoLeccion;
 import com.eduwealth.model.ResumenCategoria;
 import com.eduwealth.model.Usuario;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -264,6 +271,73 @@ final class DaosEnMemoria {
         private String nombre(int idCategoria) {
             return categorias.todas.stream().filter(c -> c.getIdCategoria() == idCategoria)
                     .map(CategoriaGasto::getNombre).findFirst().orElse("?");
+        }
+    }
+
+    static final class Lecciones implements LeccionDAO {
+        final List<Leccion> todas = new ArrayList<>();
+
+        Lecciones con(Leccion l) {
+            todas.add(l);
+            return this;
+        }
+
+        /** Mismo orden que la consulta real: por nivel y por identificador. */
+        @Override
+        public List<Leccion> listarTodas() {
+            return todas.stream()
+                    .sorted(Comparator.comparing(Leccion::getNivel).thenComparing(Leccion::getIdLeccion))
+                    .toList();
+        }
+    }
+
+    static final class Preguntas implements PreguntaDAO {
+        final List<Pregunta> todas = new ArrayList<>();
+
+        Preguntas con(Pregunta p) {
+            todas.add(p);
+            return this;
+        }
+
+        @Override
+        public List<Pregunta> listarPorLeccion(int idLeccion) {
+            return todas.stream().filter(p -> p.getIdLeccion() == idLeccion).toList();
+        }
+
+        @Override
+        public Map<Integer, Integer> contarPorLeccion() {
+            Map<Integer, Integer> totales = new HashMap<>();
+            todas.forEach(p -> totales.merge(p.getIdLeccion(), 1, Integer::sum));
+            return totales;
+        }
+    }
+
+    static final class Progresos implements ProgresoLeccionDAO {
+        final List<ProgresoLeccion> todos = new ArrayList<>();
+        private int siguienteId = 1;
+
+        @Override
+        public List<ProgresoLeccion> listarPorUsuario(int idUsuario) {
+            return todos.stream().filter(p -> p.getIdUsuario() == idUsuario).toList();
+        }
+
+        @Override
+        public Optional<ProgresoLeccion> bloquear(Transaccion tx, int idUsuario, int idLeccion) {
+            return todos.stream()
+                    .filter(p -> p.getIdUsuario() == idUsuario && p.getIdLeccion() == idLeccion)
+                    .findFirst();
+        }
+
+        @Override
+        public void insertar(Transaccion tx, ProgresoLeccion progreso) {
+            progreso.setIdProgreso(siguienteId++);
+            todos.add(progreso);
+        }
+
+        @Override
+        public void actualizar(Transaccion tx, ProgresoLeccion progreso) {
+            todos.removeIf(p -> p.getIdProgreso() == progreso.getIdProgreso());
+            todos.add(progreso);
         }
     }
 

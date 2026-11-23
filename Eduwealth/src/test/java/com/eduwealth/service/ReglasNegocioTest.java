@@ -17,7 +17,7 @@ class ReglasNegocioTest {
 
     private final PresupuestoService presupuestos = new PresupuestoService(null, null, null, null);
     private final DivisaService divisas = new DivisaService(null);
-    private final EducacionService educacion = new EducacionService(null, null);
+    private final EducacionService educacion = new EducacionService(null, null, null, null, null);
 
     private static final Divisa EUR = new Divisa(1, "EUR", "Euro", "€", new BigDecimal("1.0000"), null);
     private static final Divisa USD = new Divisa(2, "USD", "Dólar", "$", new BigDecimal("1.0850"), null);

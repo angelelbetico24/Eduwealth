@@ -9,6 +9,7 @@ import com.eduwealth.dao.jdbc.GestorTransaccionesJdbc;
 import com.eduwealth.dao.jdbc.LeccionDAOJdbc;
 import com.eduwealth.dao.jdbc.OperacionSimuladaDAOJdbc;
 import com.eduwealth.dao.jdbc.PosicionCarteraDAOJdbc;
+import com.eduwealth.dao.jdbc.PreguntaDAOJdbc;
 import com.eduwealth.dao.jdbc.PresupuestoDAOJdbc;
 import com.eduwealth.dao.jdbc.ProgresoLeccionDAOJdbc;
 import com.eduwealth.dao.jdbc.UsuarioDAOJdbc;
@@ -27,14 +28,15 @@ public final class FabricaServicios {
     private static final PresupuestoService PRESUPUESTOS = new PresupuestoService(
             new PresupuestoDAOJdbc(), new GastoDAOJdbc(), new CategoriaGastoDAOJdbc(), new GestorTransaccionesJdbc());
     private static final EducacionService EDUCACION =
-            new EducacionService(new LeccionDAOJdbc(), new ProgresoLeccionDAOJdbc());
+            new EducacionService(new LeccionDAOJdbc(), new ProgresoLeccionDAOJdbc(), new PreguntaDAOJdbc(),
+                    new OperacionSimuladaDAOJdbc(), new GestorTransaccionesJdbc());
     private static final SimuladorService SIMULADOR = new SimuladorService(new UsuarioDAOJdbc(),
             new ActivoDAOJdbc(), new PosicionCarteraDAOJdbc(), new OperacionSimuladaDAOJdbc(),
             new GestorTransaccionesJdbc(), DIVISAS);
     private static final MercadoService MERCADO =
             new MercadoService(new ActivoDAOJdbc(), new GestorTransaccionesJdbc(), new Random());
     private static final PanelService PANEL = new PanelService(SIMULADOR, PRESUPUESTOS, EDUCACION,
-            new OperacionSimuladaDAOJdbc(), new BrokerDAOJdbc());
+            new BrokerDAOJdbc());
 
     private FabricaServicios() {
     }
